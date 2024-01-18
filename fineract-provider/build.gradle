@@ -253,7 +253,7 @@ jib {
     }
 
     to {
-        image = 'fineract'
+        image = 'registry.hub.docker.com/almbolonzi/alekbulan-fineract'
         tags = [
             "${project.version}",
             'latest'
@@ -271,7 +271,7 @@ jib {
             '-Djava.security.egd=file:/dev/./urandom'
         ]
         ports = ['8080/tcp', '8443/tcp']
-        labels = [maintainer: 'Aleksandar Vidakovic <aleks@apache.org>']
+        labels = [maintainer: 'Alex Mbolonzi <almbolonzi@gmail.com>']
         user = 'nobody:nogroup'
     }
 
