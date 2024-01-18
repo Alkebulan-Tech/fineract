@@ -319,7 +319,7 @@ task migrateDatabase {
 task dockerPush {
     doLast {
         exec {
-            commandLine 'docker', 'push', "almbolonzi/alekbulan-fineract:latest"
+            commandLine 'docker', 'push', 'almbolonzi/alekbulan-fineract:latest'
         }
     }
 }
@@ -359,5 +359,3 @@ rat.dependsOn prepareInputYaml
 spotbugsTest.dependsOn resolve
 compileTestJava.dependsOn ':fineract-client:processResources', ':fineract-avro-schemas:processResources'
 resolveMainClassName.dependsOn resolve
-
-
