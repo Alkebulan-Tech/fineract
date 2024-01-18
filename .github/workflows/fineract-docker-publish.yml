@@ -1,9 +1,5 @@
-name: JIB container publish 
-
-on:
-  push:
-    branches:
-      - develop
+name: JIB container publish
+on: [push, pull_request]
 
 jobs:
   build:
