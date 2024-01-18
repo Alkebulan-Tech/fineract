@@ -316,6 +316,14 @@ task migrateDatabase {
     }
 }
 
+task dockerPush {
+    doLast {
+        exec {
+            commandLine 'docker', 'push', "almbolonzi/alekbulan-fineract:latest"
+        }
+    }
+}
+
 cucumber {
     tags = 'not @ignore'
     main = 'io.cucumber.core.cli.Main'
@@ -352,10 +360,4 @@ spotbugsTest.dependsOn resolve
 compileTestJava.dependsOn ':fineract-client:processResources', ':fineract-avro-schemas:processResources'
 resolveMainClassName.dependsOn resolve
 
-task dockerPush {
-    doLast {
-        exec {
-            commandLine 'docker', 'push', "almbolonzi/alekbulan-fineract:latest"
-        }
-    }
-}
+

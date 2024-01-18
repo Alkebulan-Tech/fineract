@@ -95,11 +95,3 @@ jib {
         }
     }
 }
-
-task dockerPush {
-    doLast {
-        exec {
-            commandLine 'docker', 'push', "almbolonzi/alekbulan-fineract:latest"
-        }
-    }
-}
