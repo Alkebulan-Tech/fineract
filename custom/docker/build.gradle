@@ -34,7 +34,7 @@ jib {
     }
 
     to {
-        image = 'registry.hub.docker.com/almbolonzi/alekbulan-fineract'
+        image = 'almbolonzi/alekbulan-fineract'
         tags = [
             "${project.version}",
             'latest'
@@ -92,6 +92,14 @@ jib {
                     }
                 }
             }
+        }
+    }
+}
+
+task dockerPush {
+    doLast {
+        exec {
+            commandLine 'docker', 'push', "almbolonzi/alekbulan-${project.name}:latest"
         }
     }
 }
