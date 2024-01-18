@@ -19,7 +19,7 @@ jobs:
           distribution: 'zulu'
           cache: gradle
       - name: Build the image
-        run: ./gradlew --no-daemon clean spotlessApply build jibDockerBuild -DskipTests
+        run: ./gradlew --no-daemon --console=plain :fineract-provider:clean :fineract-provider:build :fineract-provider:jibDockerBuild -x test -x cucumber
       - name: Docker login
         uses: docker/login-action@v2
         with:
