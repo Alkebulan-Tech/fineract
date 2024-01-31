@@ -320,8 +320,22 @@ task migrateDatabase {
 
 task dockerPush {
     doLast {
+        // Determine the version tag from Git repository tag
+        def versionTag = 'git describe --tags --abbrev=0'.execute().text.trim()
+
+        if (versionTag.startsWith('v')) {
+            // Remove 'v' prefix from version tag if present
+            versionTag = versionTag.substring(1)
+        }
+
+        // Push the versioned tag
         exec {
-            commandLine 'docker', 'push', 'almbolonzi/alekbulan-fineract:latest'
+            commandLine 'docker', 'push', "almbolonzi/alekbulan-fineract:${versionTag}"
+        }
+
+        // Push as the latest tag
+        exec {
+            commandLine 'docker', 'push', "almbolonzi/alekbulan-fineract:latest"
         }
     }
 }
