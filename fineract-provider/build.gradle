@@ -253,10 +253,19 @@ jib {
         }
     }
 
+    // Determine the version tag from Git repository tag
+    def versionTag = 'git describe --tags --abbrev=0'.execute().text.trim()
+
+    if (versionTag.startsWith('v')) {
+    // Remove 'v' prefix from version tag if present
+        versionTag = versionTag.substring(1)
+    }
+
     to {
         image = 'almbolonzi/alekbulan-fineract'
         tags = [
             "${project.version}",
+            "${versionTag}",
             'latest'
         ]
     }
@@ -323,10 +332,10 @@ task dockerPush {
         // Determine the version tag from Git repository tag
         def versionTag = 'git describe --tags --abbrev=0'.execute().text.trim()
 
-        //if (versionTag.startsWith('v')) {
+        if (versionTag.startsWith('v')) {
             // Remove 'v' prefix from version tag if present
-        //    versionTag = versionTag.substring(1)
-        //}
+            versionTag = versionTag.substring(1)
+        }
 
         // Push the versioned tag
         exec {
