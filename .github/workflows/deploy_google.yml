@@ -52,7 +52,7 @@ jobs:
       uses: 'google-github-actions/auth@v0'
       with:
         token_format: 'access_token'
-        workload_identity_provider: 'projects/nodal-linker-425007-t9/locations/global/workloadIdentityPools/kemetx-pool/providers/kemetx-provider'
+        workload_identity_provider: 'projects/991252519654/locations/global/workloadIdentityPools/kemetx-pool/providers/kemetx-provider'
         service_account: 'kemetx-gke@nodal-linker-425007-t9.iam.gserviceaccount.com'
 
     # Alternative option - authentication via credentials json
