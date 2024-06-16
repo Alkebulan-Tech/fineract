@@ -51,7 +51,7 @@ jobs:
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v1'
       with:
-    #    token_format: 'access_token'
+        token_format: 'access_token'
         workload_identity_provider: 'projects/991252519654/locations/global/workloadIdentityPools/kemetx-pool/providers/kemetx-provider'
         service_account: 'kemetx-gke@nodal-linker-425007-t9.iam.gserviceaccount.com'
 
