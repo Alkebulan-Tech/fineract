@@ -263,11 +263,11 @@ jib {
 
     to {
         //image = 'almbolonzi/alekbulan-fineract'
-        image = "${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}"
+        image = "${System.getenv('GAR_LOCATION')}-docker.pkg.dev/${System.getenv('PROJECT_ID')}/${System.getenv('REPOSITORY')}/${System.getenv('IMAGE')}"
         tags = [
             "${project.version}",
             "${versionTag}",
-            "${GITHUB_SHA}",
+            "${System.getenv('GITHUB_SHA')}",
             'latest'
         ]
     }
@@ -286,9 +286,9 @@ jib {
         labels = [maintainer: 'Alex Mbolonzi <almbolonzi@gmail.com>']
         user = 'nobody:nogroup'
         environment = [
-                'GITHUB_SHA' : "${GITHUB_SHA}",
-                'GITHUB_REF' : "${GITHUB_REF}",
-                'GAR_LOCATION' : "${GAR_LOCATION}"
+                'GITHUB_SHA' : "${System.getenv('GITHUB_SHA')}",
+                'GITHUB_REF' : "${System.getenv('GITHUB_REF')}",
+                'GAR_LOCATION' : "${System.getenv('GAR_LOCATION')}"
         ]
     }
 
