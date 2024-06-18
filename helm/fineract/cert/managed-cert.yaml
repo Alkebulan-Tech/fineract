@@ -1,0 +1,10 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: kemetstack-managed-cert
+spec:
+  domains:
+    - kemetx.kemetstack.org
+    - communityapp.kemetstack.org
+    - web.kemetstack.org
+    - self.kemetstack.org

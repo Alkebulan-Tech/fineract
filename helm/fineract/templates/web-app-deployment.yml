@@ -1,0 +1,60 @@
+{{- if .Values.webapp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+  labels:
+    app: web-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app
+     # tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: web-app
+        tier: frontend
+    spec:
+   # {{- if .Values.webapp.lookforservice }}
+   #   initContainers:
+   #     - name: init-myservice
+   #       image: busybox:1.28
+   #       command: ['sh', '-c', 'echo -e "Checking for the availability of Fineract server deployment"; while ! nc -z "fineract-server" {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}; do sleep 1; printf "-"; done; echo -e " >> Fineract server has started";']
+ # {{- end}}
+      containers:
+      - name: web-app      
+        image: "{{ .Values.webapp.image }}"
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: "{{ .Values.webapp.resources.limits.cpu }}"
+            memory: "{{ .Values.webapp.resources.limits.memory }}"
+          requests:
+            cpu: "{{ .Values.webapp.resources.requests.cpu }}"
+            memory: "{{ .Values.webapp.resources.requests.memory }}"
+        livenessProbe:
+          httpGet:
+            path: "/"
+            port: 80
+          initialDelaySeconds: 90
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: "/"
+            port: 80
+          initialDelaySeconds: 90
+          periodSeconds: 30                      
+        imagePullPolicy: Always
+        name: web-app
+        ports:
+        - containerPort: 80
+          name: web-app
+        #resources: {}
+      restartPolicy: Always
+#      serviceAccountName: ""
+#      volumes: null
+{{- end }}
