@@ -83,6 +83,14 @@ jobs:
     #      .
     - name: Build the image
       run: ./gradlew --no-daemon --console=plain :fineract-provider:clean :fineract-provider:compileJava :fineract-provider:jibDockerBuild -x test -x cucumber
+      env:
+        GAR_LOCATION: ${{ env.GAR_LOCATION }}
+        GITHUB_SHA: ${{ github.sha }}
+        GITHUB_REF: ${{ github.ref }}
+        PROJECT_ID: ${{ env.PROJECT_ID }}
+        REPOSITORY: ${{ env.REPOSITORY }}
+        IMAGE: ${{ env.IMAGE }}
+        
     # Push the Docker image to Google Artifact Registry
     - name: Publish
       run: |-
