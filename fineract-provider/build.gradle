@@ -262,10 +262,12 @@ jib {
     }
 
     to {
-        image = 'almbolonzi/alekbulan-fineract'
+        //image = 'almbolonzi/alekbulan-fineract'
+        image = "${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}"
         tags = [
             "${project.version}",
             "${versionTag}",
+            "${GITHUB_SHA}",
             'latest'
         ]
     }
@@ -283,6 +285,11 @@ jib {
         ports = ['8080/tcp', '8443/tcp']
         labels = [maintainer: 'Alex Mbolonzi <almbolonzi@gmail.com>']
         user = 'nobody:nogroup'
+        environment = [
+                'GITHUB_SHA' : "${GITHUB_SHA}",
+                'GITHUB_REF' : "${GITHUB_REF}",
+                'GAR_LOCATION' : "${GAR_LOCATION}"
+        ]
     }
 
     allowInsecureRegistries = true
