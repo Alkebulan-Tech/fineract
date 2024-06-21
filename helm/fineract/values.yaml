@@ -17,8 +17,8 @@ fineract:
               FINERACT_HIKARI_USERNAME: ${{ secrets.FINERACT_HIKARI_USERNAME_TEST }}
               FINERACT_HIKARI_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
               FINERACT_HIKARI_JDBC_URL: jdbc:mysql://$FINERACT_DEFAULT_TENANTDB_HOSTNAME?${{ secrets.FINERACT_HIKARI_JDBC_URL_TEST }}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&serverTimezone=UTC&useLegacyDatetimeCode=false&sessionVariables=time_zone=`-00:00`
-              FINERACT_SERVER_PORT: {{ secrets.FINERACT_SERVER_PORT_TEST }}
-              CONTAINER_PORT: {{ secrets.FINERACT_CONTAINER_PORT_TEST }}
+              FINERACT_SERVER_PORT: ${{ int secrets.FINERACT_SERVER_PORT_TEST }}
+              CONTAINER_PORT: ${{ int secrets.FINERACT_CONTAINER_PORT_TEST }}
   preStopScript: 'echo -e "******Fineract is stopping********";'
   ingress:
     enabled: true
