@@ -70,7 +70,7 @@ fineract:
 #      memory: "0.5Gi"
 #
 #webapp:
-#  enabled: true
+#  enabled: false
 #  lookforservice: true
 #  image: "almbolonzi/web-app:1.0.0"
 #  ingress:
@@ -89,7 +89,7 @@ fineract:
 #      memory: "0.5Gi"
 
 #selfservice:
-#  enabled: true
+#  enabled: false
 #  image: "almbolonzi/web-self-service-app:1.0.0"
 #  ingress:
 #    enabled: false
@@ -103,7 +103,7 @@ fineract:
 
 #mysql:
 #  fullnameOverride: fineract-mysql
-#  enabled: true
+#  enabled: false
 #  image:
 #    tag: "8.2.0-debian-11-r5"
 #    debug: true
