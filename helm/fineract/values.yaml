@@ -69,24 +69,24 @@ fineract:
 #      cpu: "500m"
 #      memory: "0.5Gi"
 #
-#webapp:
-#  enabled: false
-#  lookforservice: true
-#  image: "almbolonzi/web-app:1.0.0"
-#  ingress:
-#    enabled: false
-#    hostname: "web.kemetstack.org"
-#    path: "/"
-#    annotations:
-#      kubernetes.io/ingress.class: gce
-#      ingressClassName: "gce"
-#  resources:
-#    limits:
-#      cpu: "1000m"
-#      memory: "1Gi"
-#    requests:
-#      cpu: "500m"
-#      memory: "0.5Gi"
+webapp:
+  enabled: false
+  lookforservice: true
+  image: "almbolonzi/web-app:1.0.0"
+  ingress:
+    enabled: false
+    hostname: "web.kemetstack.org"
+    path: "/"
+    annotations:
+      kubernetes.io/ingress.class: gce
+      ingressClassName: "gce"
+  resources:
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+    requests:
+      cpu: "500m"
+      memory: "0.5Gi"
 
 #selfservice:
 #  enabled: false
