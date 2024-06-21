@@ -3,20 +3,22 @@ fineract:
 #  db: fineract-mysql
   DFSPIDS: ""
   SPRING_PROFILES_ACTIVE: "bb"
-  image: "almbolonzi/alekbulan-fineract:1.0.0"
+  image: ${System.getenv('IMAGE')}
   spec: 
     template:
        spec:
          containers:
             env:
-              FINERACT_DEFAULT_TENANTDB_IDENTIFIER: $FINERACT_DEFAULT_TENANTDB_IDENTIFIER
-              FINERACT_DEFAULT_TENANTDB_NAME: $FINERACT_DEFAULT_TENANTDB_NAME
-              FINERACT_DEFAULT_TENANTDB_HOSTNAME: $FINERACT_DEFAULT_TENANTDB_HOSTNAME
-              FINERACT_DEFAULT_TENANTDB_PORT: $FINERACT_DEFAULT_TENANTDB_PORT
+              FINERACT_DEFAULT_TENANTDB_IDENTIFIER: ${{ secrets.FINERACT_DEFAULT_TENANTDB_IDENTIFIER_TEST }}
+              FINERACT_DEFAULT_TENANTDB_NAME: ${{ secrets.FINERACT_DEFAULT_TENANTDB_NAME_TEST }}
+              FINERACT_DEFAULT_TENANTDB_HOSTNAME: ${{ secrets.FINERACT_DEFAULT_TENANTDB_HOSTNAME_TEST }}
+              FINERACT_DEFAULT_TENANTDB_PORT: ${{ secrets.FINERACT_DEFAULT_TENANTDB_PORT_TEST }}
+              FINERACT_HIKARI_PASSWORD: ${{ secrets.FINERACT_HIKARI_PASSWORD_TEST }}
+              FINERACT_HIKARI_USERNAME: ${{ secrets.FINERACT_HIKARI_USERNAME_TEST }}
               FINERACT_HIKARI_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
-              FINERACT_HIKARI_JDBC_URL: jdbc:mysql://$FINERACT_DEFAULT_TENANTDB_HOSTNAME:$FINERACT_DEFAULT_TENANTDB_PORT/$FINERACT_TENANTDB_NAME
-              FINERACT_SERVER_PORT: $FINERACT_SERVER_PORT
-              CONTAINER_PORT: $FINERACT_CONTAINER_PORT
+              FINERACT_HIKARI_JDBC_URL: jdbc:mysql://$FINERACT_DEFAULT_TENANTDB_HOSTNAME?${{ secrets.FINERACT_HIKARI_JDBC_URL_TEST }}&socketFactory=com.google.cloud.sql.mysql.SocketFactory&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&serverTimezone=UTC&useLegacyDatetimeCode=false&sessionVariables=time_zone=`-00:00`
+              FINERACT_SERVER_PORT: ${{ secrets.FINERACT_SERVER_PORT_TEST }}
+              CONTAINER_PORT: ${{ secrets.FINERACT_CONTAINER_PORT_TEST }}
   preStopScript: 'echo -e "******Fineract is stopping********";'
   ingress:
     enabled: true

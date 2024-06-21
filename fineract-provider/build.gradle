@@ -154,6 +154,7 @@ dependencies {
     driver 'org.mariadb.jdbc:mariadb-java-client'
     driver 'org.postgresql:postgresql'
     driver 'com.mysql:mysql-connector-j:8.2.0'
+    driver 'com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.14.1'
 }
 
 URLClassLoader loader = GroovyObject.class.classLoader
@@ -226,6 +227,7 @@ bootRun {
         implementation 'org.mariadb.jdbc:mariadb-java-client'
         implementation 'org.postgresql:postgresql'
         implementation 'com.mysql:mysql-connector-j:8.2.0'
+        implementation 'com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.14.1'
     }
 }
 

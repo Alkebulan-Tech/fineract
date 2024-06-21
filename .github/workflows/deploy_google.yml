@@ -129,3 +129,5 @@ jobs:
         helm repo add redis https://charts.bitnami.com/bitnami
         
         helm repo update
+        
+        helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ --install --create-namespace --namespace paymenthub-back-end
