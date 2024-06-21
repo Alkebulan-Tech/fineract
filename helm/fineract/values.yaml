@@ -41,8 +41,8 @@ fineract:
       cpu: "1000m"
       memory: "2Gi"
     requests:
-      cpu: "500m"
-      memory: "512Mi"
+      cpu: "600m"
+      memory: "1Gi"
   deployment:
     extraEnvs:
       - name: "FINERACT_SECURITY_BASICAUTH_ENABLED"
