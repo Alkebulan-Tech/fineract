@@ -88,15 +88,15 @@ webapp:
       cpu: "500m"
       memory: "0.5Gi"
 
-#selfservice:
-#  enabled: false
-#  image: "almbolonzi/web-self-service-app:1.0.0"
-#  ingress:
-#    enabled: false
-#    hostname: "self.kemetstack.org"
-#    path: "/"
-#    annotations:
-#      kubernetes.io/ingress.class: gce
+selfservice:
+  enabled: false
+  image: "almbolonzi/web-self-service-app:1.0.0"
+  ingress:
+    enabled: false
+    hostname: "self.kemetstack.org"
+    path: "/"
+    annotations:
+      kubernetes.io/ingress.class: gce
 
 
 
