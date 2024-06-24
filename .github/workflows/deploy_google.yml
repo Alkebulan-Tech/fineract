@@ -23,7 +23,7 @@ env:
   GKE_ZONE: us-central1-c   # TODO: update to cluster zone
   DEPLOYMENT_NAME: kemetx-gke-test # TODO: update to deployment name
   REPOSITORY: kemetx-fineract # TODO: update to Artifact Registry docker repository
-  IMAGE: $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
+  IMAGE: {{ $GAR_LOCATION }}-docker.pkg.dev/{{ $PROJECT_ID }}/{{ $REPOSITORY }}/{{ $IMAGE }}:{{ $GITHUB_SHA }}
 
 jobs:
   setup-build-publish-deploy:
