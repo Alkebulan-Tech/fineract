@@ -5,7 +5,7 @@ fineract:
   SPRING_PROFILES_ACTIVE: "bb"
   image:
     repository: ""
-    tag: ""
+#    tag: ""
   spec: 
     template:
        spec:
