@@ -265,7 +265,7 @@ jib {
 
     to {
         //image = 'almbolonzi/alekbulan-fineract'
-        image = "${System.getenv('GAR_LOCATION')}-docker.pkg.dev-docker.pkg.dev/${System.getenv('PROJECT_ID')}/${System.getenv('REPOSITORY')}/${System.getenv('IMAGE')}".toString()
+        image = "${System.getenv('GAR_LOCATION')}-docker.pkg.dev-docker.pkg.dev/${System.getenv('PROJECT_ID')}/${System.getenv('REPOSITORY')}/${System.getenv('IMAGE')}:${System.getenv('GITHUB_SHA')}".toString()
         tags = [
             "${project.version}",
             "${versionTag}",
