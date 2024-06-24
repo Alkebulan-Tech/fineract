@@ -132,4 +132,4 @@ jobs:
         
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
         --install --create-namespace --namespace paymenthub-back-end \
-        --image $IMAGE
+        --set image=$IMAGE
