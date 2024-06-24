@@ -3,7 +3,7 @@ fineract:
 #  db: fineract-mysql
   DFSPIDS: ""
   SPRING_PROFILES_ACTIVE: "bb"
-  image: ""
+  image: ${{ IMAGE }}
   spec: 
     template:
        spec:
