@@ -23,7 +23,7 @@ env:
   GKE_ZONE: us-central1-c   # TODO: update to cluster zone
   DEPLOYMENT_NAME: kemetx-gke-test # TODO: update to deployment name
   REPOSITORY: kemetx-fineract # TODO: update to Artifact Registry docker repository
-  IMAGE: {{ $GAR_LOCATION }}-docker.pkg.dev/{{ $PROJECT_ID }}/{{ $REPOSITORY }}/{{ $IMAGE }}:{{ $GITHUB_SHA }}
+  IMAGE: alekbulan-fineract
 
 jobs:
   setup-build-publish-deploy:
@@ -124,7 +124,7 @@ jobs:
         
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
         --install --create-namespace --namespace paymenthub-back-end \
-        --set image=$IMAGE
+        --set image={{ $GAR_LOCATION }}-docker.pkg.dev/{{ $PROJECT_ID }}/{{ $REPOSITORY }}/{{ $IMAGE }}:{{ $GITHUB_SHA }}
 #        --set image.tag=$GITHUB_SHA \
 #        --set deploymentName=ph-ee-backend-test \
 #        --set namespace=paymenthub-test
