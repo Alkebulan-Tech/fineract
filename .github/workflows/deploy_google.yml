@@ -110,14 +110,6 @@ jobs:
 #        kubectl get services -o wide
         # Deploy the Docker image to the GKE cluster using Helm
     - name: Deploy
-      env:
-        GAR_LOCATION: $GAR_LOCATION
-        PROJECT_ID: $PROJECT_ID
-        REPOSITORY: $REPOSITORY
-        IMAGE: $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
-        GITHUB_SHA: $GITHUB_SHA
-        DEPLOYMENT_NAME: 'ph-ee-backend-test'
-        NAMESPACE: 'paymenthub-test'
       run: |
         # Add Helm repo if needed (adjust to your Helm chart repository)
         helm repo add camunda-platform https://helm.camunda.io
@@ -131,5 +123,13 @@ jobs:
         helm repo update
         
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
-        --install --create-namespace --namespace paymenthub-back-end \
-        --set image=$IMAGE
+        --install --create-namespace --namespace paymenthub-back-end
+
+      env:
+        GAR_LOCATION: $GAR_LOCATION
+        PROJECT_ID: $PROJECT_ID
+        REPOSITORY: $REPOSITORY
+        image: $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
+        GITHUB_SHA: $GITHUB_SHA
+        DEPLOYMENT_NAME: 'ph-ee-backend-test'
+        NAMESPACE: 'paymenthub-test'
