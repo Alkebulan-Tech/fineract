@@ -114,7 +114,7 @@ jobs:
         GAR_LOCATION: $GAR_LOCATION
         PROJECT_ID: $PROJECT_ID
         REPOSITORY: $REPOSITORY
-        IMAGE: "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA"
+        IMAGE: $GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
         GITHUB_SHA: $GITHUB_SHA
         DEPLOYMENT_NAME: 'ph-ee-backend-test'
         NAMESPACE: 'paymenthub-test'
@@ -130,4 +130,6 @@ jobs:
         
         helm repo update
         
-        helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ --install --create-namespace --namespace paymenthub-back-end
+        helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/\
+        --install --create-namespace --namespace paymenthub-back-end\ 
+        --set image $IMAGE
