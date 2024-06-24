@@ -38,11 +38,11 @@ fineract:
       networking.gke.io/managed-certificates: kemetstack-managed-cert
   resources:
     limits:
+      cpu: "2000m"
+      memory: "4Gi"
+    requests:
       cpu: "1000m"
       memory: "2Gi"
-    requests:
-      cpu: "600m"
-      memory: "1Gi"
   deployment:
     extraEnvs:
       - name: "FINERACT_SECURITY_BASICAUTH_ENABLED"
