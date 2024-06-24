@@ -123,7 +123,11 @@ jobs:
         helm repo update
         
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
-        --install --create-namespace --namespace paymenthub-back-end
+        --install --create-namespace --namespace paymenthub-back-end \
+        --set image=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE
+#        --set image.tag=$GITHUB_SHA \
+#        --set deploymentName=ph-ee-backend-test \
+#        --set namespace=paymenthub-test
 
       env:
         GAR_LOCATION: $GAR_LOCATION
