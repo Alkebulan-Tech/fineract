@@ -124,7 +124,7 @@ jobs:
         
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
         --install --create-namespace --namespace paymenthub-back-end \
-        --set image=${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}
+        --set fineract.image=${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}
 #        --set image.tag=$GITHUB_SHA \
 #        --set deploymentName=ph-ee-backend-test \
 #        --set namespace=paymenthub-test
