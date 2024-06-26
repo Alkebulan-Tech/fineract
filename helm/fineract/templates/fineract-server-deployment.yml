@@ -57,13 +57,12 @@ spec:
       initContainers:
         - name: cloud-sql-proxy
           image: cloud/sql-proxy:2.1  # Adjust image tag based on your needs
-          command: [ "/cloud_sql_proxy", "-instances=<your-project-id>:<your-region>:<your-cloud-sql-instance>=tcp:3306", "--credential_file=/credentials/key.json" ]  # Replace placeholders
-          volumeMounts:
-            - name: cloud-sql-proxy-creds
-              mountPath: /credentials  # Path where credentials will be downloaded
-          volumes:
-            - name: cloud-sql-proxy-creds
-              emptyDir: { }  # Creates an empty directory for credentials
+          command: ["/cloud_sql_proxy", "-instances=secrets.FINERACT_HIKARI_JDBC_CONNECTION_TEST=tcp:3306"]  # Replace placeholders
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              name: my-secret  # Name of the secret holding credentials
+              key: key.json  # Key holding the service account credentials file
 #        - name: init-mydb
 #          image: busybox:1.28
 #          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}" "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
