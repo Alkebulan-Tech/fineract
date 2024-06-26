@@ -56,9 +56,9 @@ spec:
     spec:
       initContainers:
         - name: cloud-sql-proxy
-          image: cloud/sql-proxy:2.1  # Adjust image tag based on your needs
+          image: cloud/sql-proxy:2.11.4  # Adjust image tag based on your needs
           command: ["/cloud_sql_proxy", "-instances=secrets.FINERACT_HIKARI_JDBC_CONNECTION_TEST=tcp:3306"]  # Replace placeholders
-        - name: GOOGLE_APPLICATION_CREDENTIALS
+        - name: kemetx_sql_credentials
           valueFrom:
             secretKeyRef:
               name: my-secret  # Name of the secret holding credentials
