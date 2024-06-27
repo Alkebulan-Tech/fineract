@@ -104,7 +104,7 @@ spec:
 ##              key: key.json  # Key holding the service account credentials file
         - name: init-mydb
           image: busybox:1.28
-          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "cloudsql-proxy" "3306"; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z cloudsql-proxy 3306; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
 #          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h cloudsql-proxy
 #          -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
 #          -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" -e "select 1";
