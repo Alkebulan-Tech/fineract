@@ -70,7 +70,7 @@ spec:
 
             # Replace DB_PORT with the port the proxy should listen on
             - "--port=3306"
-            - "nodal-linker-425007-t9:us-central1:kemetx-instance"
+            - "kemetx-instance"
 
           securityContext:
             # The default Cloud SQL Auth Proxy image runs as the
@@ -102,20 +102,19 @@ spec:
 ##            secretKeyRef:
 ##              name: my-secret  # Name of the secret holding credentials
 ##              key: key.json  # Key holding the service account credentials file
-#        - name: init-mydb
-#          image: busybox:1.28
-#          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h
-#          "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
-#          -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
-#          -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" -e "select 1";
-#           do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started";
-#            mysql -h "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
-#            -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
-#            -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" <<EOSQL
-#                      GRANT ALL ON *.* TO "root"@"%";
-#                      GRANT ALL PRIVILEGES ON kemetx_tenants.* TO "mifos";
-#                      GRANT ALL PRIVILEGES ON kemetx_default.* TO "mifos";
-#                      EOSQL']
+        - name: init-mydb
+          image: busybox:1.28
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h 127.0.0.1
+          -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
+          -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" -e "select 1";
+           do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started";
+            mysql -h 127.0.0.1
+            -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
+            -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" <<EOSQL
+                      GRANT ALL ON *.* TO "root"@"%";
+                      GRANT ALL PRIVILEGES ON kemetx_tenants.* TO "mifos";
+                      GRANT ALL PRIVILEGES ON kemetx_default.* TO "mifos";
+                      EOSQL']
       containers:
       - name: fineract-server
         image: "{{ .Values.fineract.image }}"
