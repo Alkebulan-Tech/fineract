@@ -104,18 +104,18 @@ spec:
 ##              key: key.json  # Key holding the service account credentials file
         - name: init-mydb
           image: mysql:8.0
-          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z cloudsqlproxy 3306; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
-#          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h cloudsql-proxy
-#          -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
-#          -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" -e "select 1";
-#           do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started";
-#            mysql -h cloudsql-proxy
-#            -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
-#            -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" <<EOSQL
-#                      GRANT ALL ON *.* TO "root"@"%";
-#                      GRANT ALL PRIVILEGES ON kemetx_tenants.* TO "mifos";
-#                      GRANT ALL PRIVILEGES ON kemetx_default.* TO "mifos";
-#                      EOSQL']
+#          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z cloudsqlproxy 3306; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h cloudsqlproxy
+          -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
+          -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" -e "select 1";
+           do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started";
+            mysql -h cloudsqlproxy
+            -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
+            -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" <<EOSQL
+                      GRANT ALL ON *.* TO "root"@"%";
+                      GRANT ALL PRIVILEGES ON kemetx_tenants.* TO "mifos";
+                      GRANT ALL PRIVILEGES ON kemetx_default.* TO "mifos";
+                      EOSQL']
       containers:
       - name: fineract-server
         image: "{{ .Values.fineract.image }}"
