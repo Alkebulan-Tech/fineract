@@ -104,11 +104,11 @@ spec:
 ##              key: key.json  # Key holding the service account credentials file
         - name: init-mydb
           image: busybox:1.28
-          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h cloudsql-proxy.paymenthub-back-end
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h 127.0.0.1
           -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
           -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" -e "select 1";
            do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started";
-            mysql -h cloudsql-proxy.paymenthub-back-end
+            mysql -h 127.0.0.1
             -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
             -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" <<EOSQL
                       GRANT ALL ON *.* TO "root"@"%";
