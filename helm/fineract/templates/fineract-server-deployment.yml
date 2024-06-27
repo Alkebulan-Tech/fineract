@@ -55,67 +55,67 @@ spec:
         tier: backend
     spec:
       serviceAccountName: fineract-ksa #need to add this to secret manager
-      initContainers:
-        - name: cloud-sql-proxy
-          # It is recommended to use the latest version of the Cloud SQL Auth Proxy
-          # Make sure to update on a regular schedule!
-          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4
-          args:
-            # If connecting from a VPC-native GKE cluster, you can use the
-            # following flag to have the proxy connect over private IP
-            # - "--private-ip"
-
-            # Enable structured logging with LogEntry format:
-            - "--structured-logs"
-
-            # Replace DB_PORT with the port the proxy should listen on
-            - "--port=3306"
-            - "kemetx-instance"
-
-          securityContext:
-            # The default Cloud SQL Auth Proxy image runs as the
-            # "nonroot" user and group (uid: 65532) by default.
-            runAsNonRoot: true
-          # You should use resource requests/limits as a best practice to prevent
-          # pods from consuming too many resources and affecting the execution of
-          # other pods. You should adjust the following values based on what your
-          # application needs. For details, see
-          # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-          resources:
-            requests:
-              # The proxy's memory use scales linearly with the number of active
-              # connections. Fewer open connections will use less memory. Adjust
-              # this value based on your application's requirements.
-              memory: "500Mi"
-              # The proxy's CPU use scales linearly with the amount of IO between
-              # the database and the application. Adjust this value based on your
-              # application's requirements.
-              cpu: "200m"
-            limits:
-              memory: "1Gi"
-              cpu: "500m"
+#      initContainers:
 #        - name: cloud-sql-proxy
-#          image: cloud/sql-proxy:2.11.4  # Adjust image tag based on your needs
-#          command: ["/cloud_sql_proxy", "-instances=secrets.FINERACT_HIKARI_JDBC_CONNECTION_TEST=tcp:3306"]  # Replace placeholders
-#        - name: kemetx-sql-credentials
-#          valueFrom:
-#            secretKeyRef:
-#              name: my-secret  # Name of the secret holding credentials
-#              key: key.json  # Key holding the service account credentials file
-        - name: init-mydb
-          image: busybox:1.28
-          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h 
-          "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}" 
-          -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}" 
-          -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" -e "select 1";
-           do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started"; 
-            mysql -h "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}" 
-            -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}" 
-            -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" <<EOSQL
-                      GRANT ALL ON *.* TO "root"@"%";
-                      GRANT ALL PRIVILEGES ON kemetx_tenants.* TO "mifos";
-                      GRANT ALL PRIVILEGES ON kemetx_default.* TO "mifos";
-                      EOSQL']
+#          # It is recommended to use the latest version of the Cloud SQL Auth Proxy
+#          # Make sure to update on a regular schedule!
+#          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4
+#          args:
+#            # If connecting from a VPC-native GKE cluster, you can use the
+#            # following flag to have the proxy connect over private IP
+#            # - "--private-ip"
+#
+#            # Enable structured logging with LogEntry format:
+#            - "--structured-logs"
+#
+#            # Replace DB_PORT with the port the proxy should listen on
+#            - "--port=3306"
+#            - "kemetx-instance"
+#
+#          securityContext:
+#            # The default Cloud SQL Auth Proxy image runs as the
+#            # "nonroot" user and group (uid: 65532) by default.
+#            runAsNonRoot: true
+#          # You should use resource requests/limits as a best practice to prevent
+#          # pods from consuming too many resources and affecting the execution of
+#          # other pods. You should adjust the following values based on what your
+#          # application needs. For details, see
+#          # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+#          resources:
+#            requests:
+#              # The proxy's memory use scales linearly with the number of active
+#              # connections. Fewer open connections will use less memory. Adjust
+#              # this value based on your application's requirements.
+#              memory: "500Mi"
+#              # The proxy's CPU use scales linearly with the amount of IO between
+#              # the database and the application. Adjust this value based on your
+#              # application's requirements.
+#              cpu: "200m"
+#            limits:
+#              memory: "1Gi"
+#              cpu: "500m"
+##        - name: cloud-sql-proxy
+##          image: cloud/sql-proxy:2.11.4  # Adjust image tag based on your needs
+##          command: ["/cloud_sql_proxy", "-instances=secrets.FINERACT_HIKARI_JDBC_CONNECTION_TEST=tcp:3306"]  # Replace placeholders
+##        - name: kemetx-sql-credentials
+##          valueFrom:
+##            secretKeyRef:
+##              name: my-secret  # Name of the secret holding credentials
+##              key: key.json  # Key holding the service account credentials file
+#        - name: init-mydb
+#          image: busybox:1.28
+#          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h
+#          "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
+#          -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
+#          -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" -e "select 1";
+#           do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started";
+#            mysql -h "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
+#            -u "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME }}"
+#            -p "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}" <<EOSQL
+#                      GRANT ALL ON *.* TO "root"@"%";
+#                      GRANT ALL PRIVILEGES ON kemetx_tenants.* TO "mifos";
+#                      GRANT ALL PRIVILEGES ON kemetx_default.* TO "mifos";
+#                      EOSQL']
       containers: 
       - name: fineract-server
         image: "{{ .Values.fineract.image }}"
