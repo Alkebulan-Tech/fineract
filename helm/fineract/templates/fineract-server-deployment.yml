@@ -122,11 +122,11 @@ spec:
 #          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z cloudsqlproxy 3306; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
           command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h cloudsqlproxy
           -u admin_user
-          -p$MYSQL_ROOT_PASSWORD -P 3306 -e "select 1";
+          -p$MYSQL_ROOT_PASSWORD -e "select 1";
            do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started";
             mysql -h cloudsqlproxy 
             -u admin_user
-            -p$MYSQL_ROOT_PASSWORD -P 3306 <<EOSQL
+            -p$MYSQL_ROOT_PASSWORD <<EOSQL
                       GRANT ALL ON *.* TO "root"@"%";
                       GRANT ALL PRIVILEGES ON kemetx_tenants.* TO "mifos";
                       GRANT ALL PRIVILEGES ON kemetx_default.* TO "mifos";
