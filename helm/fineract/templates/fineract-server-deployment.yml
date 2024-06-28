@@ -95,14 +95,23 @@ spec:
 #            limits:
 #              memory: "1Gi"
 #              cpu: "500m"
-##        - name: cloud-sql-proxy
-##          image: cloud/sql-proxy:2.11.4  # Adjust image tag based on your needs
-##          command: ["/cloud_sql_proxy", "-instances=secrets.FINERACT_HIKARI_JDBC_CONNECTION_TEST=tcp:3306"]  # Replace placeholders
-##        - name: kemetx-sql-credentials
-##          valueFrom:
-##            secretKeyRef:
-##              name: my-secret  # Name of the secret holding credentials
-##              key: key.json  # Key holding the service account credentials file
+        - name: cloudsqlproxy
+          image: cloudsql-proxy:1.17.0 # Update image version as needed
+          command: [ "/cloud_sql_proxy","-instances=nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306","--structured-logs", "--auto-iam-authn" ]
+          volumeMounts:
+            - name: cloud-sql-secret
+              mountPath: /credentials
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 500Mi
+              memory: 1Gi
+          volumes:
+            - name: cloud-sql-secret
+              secret:
+                secretName: kemetx-cloudsql-db-secret
         - name: init-mydb
           image: mysql:8.0
           env:
@@ -188,23 +197,6 @@ spec:
               exec:
                 command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
 
-- name: cloudsqlproxy
-  image: cloudsql-proxy:1.17.0 # Update image version as needed
-  command: [ "/cloud_sql_proxy","-instances=nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306","--structured-logs", "--auto-iam-authn"]
-#  volumeMounts:
-#    - name: cloud-sql-secret
-#      mountPath: /credentials
-  resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-      limits:
-        cpu: 500Mi
-        memory: 1Gi
-#  volumes:
-#    - name: cloud-sql-secret
-#      secret:
-#        secretName: kemetx-cloudsql-db-secret
 ---
 {{- if .Values.fineract.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
