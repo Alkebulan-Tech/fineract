@@ -108,10 +108,10 @@ spec:
             limits:
               cpu: 500Mi
               memory: 1Gi
-          volumes:
-            - name: cloud-sql-secret
-              secret:
-                secretName: fineract-tenants-db-secret
+#          volumes:
+#            - name: cloud-sql-secret
+#              secret:
+#                secretName: fineract-tenants-db-secret
         - name: init-mydb
           image: mysql:8.0
           env:
