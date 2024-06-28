@@ -70,6 +70,7 @@ spec:
 
             # Replace DB_PORT with the port the proxy should listen on
             - "--port=3306"
+            - "--auto-iam-authn"
             - "kemetx-instance"
 
           securityContext:
