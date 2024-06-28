@@ -1,6 +1,6 @@
 fineract:
   enabled: true
-  db: cloud-sql-proxy
+#  db: cloud-sql-proxy
   DFSPIDS: ""
   SPRING_PROFILES_ACTIVE: "test"
   image: ""
