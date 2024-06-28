@@ -145,16 +145,16 @@ spec:
             value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_JDBC_URL }}"
           - name: FINERACT_HIKARI_USERNAME
 #            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_USERNAME }}"
-            valueFrom:
-              secretKeyRef:
-                name: fineract-tenants-db-secret
-                key: username
+#            valueFrom:
+#              secretKeyRef:
+#                name: fineract-tenants-db-secret
+#                key: username
           - name: FINERACT_HIKARI_PASSWORD
             value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}"
-            valueFrom:
-              secretKeyRef:
-                name: fineract-tenants-db-secret
-                key: password
+#            valueFrom:
+#              secretKeyRef:
+#                name: fineract-tenants-db-secret
+#                key: password
           - name: FINERACT_DEFAULT_TENANTDB_HOSTNAME
             value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
           - name: FINERACT_DEFAULT_TENANTDB_PORT
@@ -191,9 +191,9 @@ spec:
 - name: cloudsqlproxy
   image: cloudsql-proxy:1.17.0 # Update image version as needed
   command: [ "/cloud_sql_proxy","-instances=nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306","--structured-logs", "--auto-iam-authn"]
-  volumeMounts:
-    - name: cloud-sql-secret
-      mountPath: /credentials
+#  volumeMounts:
+#    - name: cloud-sql-secret
+#      mountPath: /credentials
   resources:
       requests:
         cpu: 100m
@@ -201,10 +201,10 @@ spec:
       limits:
         cpu: 500Mi
         memory: 1Gi
-  volumes:
-    - name: cloud-sql-secret
-      secret:
-        secretName: kemetx-cloudsql-db-secret
+#  volumes:
+#    - name: cloud-sql-secret
+#      secret:
+#        secretName: kemetx-cloudsql-db-secret
 ---
 {{- if .Values.fineract.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
