@@ -54,7 +54,7 @@ spec:
         app: fineract-server
         tier: backend
     spec:
-      serviceAccountName: fineract-ksa #need to add this to secret manager
+#      serviceAccountName: fineract-ksa #need to add this to secret manager
       initContainers:
 #        - name: cloudsqlproxy
 #          # It is recommended to use the latest version of the Cloud SQL Auth Proxy
