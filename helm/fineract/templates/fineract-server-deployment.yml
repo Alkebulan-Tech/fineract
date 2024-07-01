@@ -54,8 +54,8 @@ spec:
         app: fineract-server
         tier: backend
     spec:
-      #serviceAccountName: fineract-ksa #need to add this to secret manager
-      #initContainers:
+      serviceAccountName: fineract-ksa #need to add this to secret manager
+      initContainers:
 #        - name: cloudsqlproxy
 #          # It is recommended to use the latest version of the Cloud SQL Auth Proxy
 #          # Make sure to update on a regular schedule!
@@ -94,23 +94,23 @@ spec:
 #            limits:
 #              memory: "1Gi"
 #              cpu: "500m"
-#        - name: cloudsqlproxy
-#          image: cloudsql-proxy:1.17.0 # Update image version as needed
-#          command: [ "/cloud_sql_proxy","-instances=nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306","--structured-logs", "--auto-iam-authn" ]
+        - name: cloudsqlproxy
+          image: cloudsql-proxy:1.17.0 # Update image version as needed
+          command: [ "/cloud_sql_proxy","-instances=nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306","--structured-logs", "--auto-iam-authn" ]
 #          volumeMounts:
 #            - name: cloud-sql-secret
 #              mountPath: /credentials
-#          resources:
-#            requests:
-#              cpu: 100m
-#              memory: 100Mi
-#            limits:
-#              cpu: 500Mi
-#              memory: 1Gi
-#          volumes:
-#            - name: cloud-sql-secret
-#              secret:
-#                secretName: fineract-tenants-db-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 500Mi
+              memory: 1Gi
+          volumes:
+            - name: cloud-sql-secret
+              secret:
+                secretName: fineract-tenants-db-secret
 #        - name: init-mydb
 #          image: mysql:8.0
 #          env:
