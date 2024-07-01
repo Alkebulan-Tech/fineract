@@ -67,9 +67,8 @@ spec:
   type: ClusterIP
 
 ---
-
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: fineract-server
   labels:
@@ -87,18 +86,21 @@ spec:
         app: fineract-server
         tier: backend
     spec:
-      serviceAccountName: fineract-ksa #need to add this to secret manager
+#      initContainers:
+#        - name: init-mydb
+#          image: busybox:1.28
+#          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}" "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
       containers:
-       - name: fineract-server
-         image: "{{ .Values.fineract.image }}"
-         imagePullPolicy: Always
-         resources:
-          limits:
-           cpu: "{{ .Values.fineract.resources.limits.cpu }}"
-           memory: "{{ .Values.fineract.resources.limits.memory }}"
-          requests:
-            cpu: "{{ .Values.fineract.resources.requests.cpu }}"
-            memory: "{{ .Values.fineract.resources.requests.memory }}"
+        - name: fineract-server
+          image: "{{ .Values.fineract.image }}"
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "{{ .Values.fineract.resources.limits.cpu }}"
+              memory: "{{ .Values.fineract.resources.limits.memory }}"
+            requests:
+              cpu: "{{ .Values.fineract.resources.requests.cpu }}"
+              memory: "{{ .Values.fineract.resources.requests.memory }}"
           env:
             - name: FINERACT_SERVER_PORT
               value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}"
@@ -109,13 +111,11 @@ spec:
             - name: FINERACT_HIKARI_JDBC_URL
               value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_JDBC_URL }}"
             - name: FINERACT_HIKARI_USERNAME
-#             value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_USERNAME }}"
               valueFrom:
                 secretKeyRef:
                   name: fineract-tenants-db-secret
                   key: username
             - name: FINERACT_HIKARI_PASSWORD
-              #value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}"
               valueFrom:
                 secretKeyRef:
                   name: fineract-tenants-db-secret
@@ -129,42 +129,41 @@ spec:
             - name: FINERACT_DEFAULT_TENANTDB_NAME
               value:   "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME}}"
             - name: FINERACT_DEFAULT_TENANTDB_UID
-              #value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_USERNAME }}"
               valueFrom:
                 secretKeyRef:
                   name: fineract-tenants-db-secret
                   key: username
             - name: FINERACT_DEFAULT_TENANTDB_PWD
-              #value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}"
               valueFrom:
                 secretKeyRef:
                   name: fineract-tenants-db-secret
                   key: password
             - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
               value: ''
-{{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
-{{ toYaml ( .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs ) | indent 10 }}
-{{- end }}
-    ports:
-     - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
-       name: fineract-server
-       lifecycle:
-        preStop:
-          exec:
-            command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
 
-#     - name: cloudsqlproxy
-#       image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
-#       command: ["/cloud-sql-proxy", "--private-ip",
-#                "nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306","--auto-iam-authn"]
-#       volumeMounts:
-#       - name: cloudsql-instance-credentials
-#         mountPath: /secrets/cloudsql
-#         readOnly: true
-#     volumes:
-#     - name: cloudsql-instance-credentials
-#       secret:
-#        secretName: fineract-tenants-db-secret
+        - name: cloudsqlproxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
+          command: [ "/cloud-sql-proxy", "--private-ip",
+                     "nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306","--auto-iam-authn" ]
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+        volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: fineract-tenants-db-secret
+  {{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
+  {{ toYaml ( .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs ) | indent 10 }}
+  {{- end }}
+ports:
+  - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
+    name: fineract-server
+lifecycle:
+  preStop:
+    exec:
+      command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
+
 ---
 {{- if .Values.fineract.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
