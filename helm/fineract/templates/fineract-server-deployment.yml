@@ -67,7 +67,6 @@ spec:
   type: ClusterIP
 
 ---
-
 apiVersion: v1
 kind: Pod
 metadata:
@@ -81,92 +80,57 @@ spec:
       tier: backend
   strategy:
     type: Recreate
-  template: 
+  template:
     metadata:
       labels:
         app: fineract-server
         tier: backend
     spec:
-      serviceAccountName: fineract-ksa #need to add this to secret manager
-#      initContainers:
-#        - name: cloudsqlproxy
-#          # It is recommended to use the latest version of the Cloud SQL Auth Proxy
-#          # Make sure to update on a regular schedule!
-#          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
-#          args:
-#            # If connecting from a VPC-native GKE cluster, you can use the
-#            # following flag to have the proxy connect over private IP
-#            # - "--private-ip"
-#            - "nodal-linker-425007-t9:us-central1:kemetx-instance"
-#            # Enable structured logging with LogEntry format:
-#            - "--structured-logs"
-#
-#            # Replace DB_PORT with the port the proxy should listen on
-#            - "--port=3306"
-#            - "--auto-iam-authn"
-#
-#          securityContext:
-#            # The default Cloud SQL Auth Proxy image runs as the
-#            # "nonroot" user and group (uid: 65532) by default.
-#            runAsNonRoot: true
-##           You should use resource requests/limits as a best practice to prevent
-##           pods from consuming too many resources and affecting the execution of
-##           other pods. You should adjust the following values based on what your
-##           application needs. For details, see
-##           https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-#          resources:
-#            requests:
-#              # The proxy's memory use scales linearly with the number of active
-#              # connections. Fewer open connections will use less memory. Adjust
-#              # this value based on your application's requirements.
-#              memory: "500Mi"
-#              # The proxy's CPU use scales linearly with the amount of IO between
-#              # the database and the application. Adjust this value based on your
-#              # application's requirements.
-#              cpu: "200m"
-#            limits:
-#              memory: "1Gi"
-#              cpu: "500m"
-#          volumes:
-#             - name: cloud-sql-secret
-#               secret:
-#                secretName: fineract-tenants-db-secret
-#        - name: cloudsqlproxy
-#          image: cloudsql-proxy:1.17.0 # Update image version as needed
-#          command: [ "/cloud_sql_proxy","-instances=nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306","--structured-logs", "--auto-iam-authn" ]
-##          volumeMounts:
-##            - name: cloud-sql-secret
-##              mountPath: /credentials
-#          resources:
-#            requests:
-#              cpu: 100m
-#              memory: 100Mi
-#            limits:
-#              cpu: 500Mi
-#              memory: 1Gi
-#          volumes:
-#            - name: cloud-sql-secret
-#              secret:
-#                secretName: fineract-tenants-db-secret
-#        - name: init-mydb
-#          image: mysql:8.0
-#          env:
-#            - name: MYSQL_ROOT_PASSWORD
-#              valueFrom:
-#                secretKeyRef:
-#                  name: fineract-tenants-db-secret
-#                  key: password
-##          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z cloudsqlproxy 3306; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
-#          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h cloudsqlproxy
-#          -u admin_user
-#          -p$MYSQL_ROOT_PASSWORD -e "select 1";
-#           do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started";
-#            mysql -h cloudsqlproxy
-#            -u admin_user
-#            -p$MYSQL_ROOT_PASSWORD <<EOSQL
-#                      GRANT ALL ON *.* TO "root"@"%";
-#                      GRANT ALL PRIVILEGES ON kemetx_tenants.* TO "mifos";
-#                      GRANT ALL PRIVILEGES ON kemetx_default.* TO "mifos"; EOSQL']
+      serviceAccountName: fineract-ksa # Need to add this to secret manager
+      #      initContainers:
+      #        - name: cloudsqlproxy
+      #          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
+      #          args:
+      #            - "nodal-linker-425007-t9:us-central1:kemetx-instance"
+      #            - "--structured-logs"
+      #            - "--port=3306"
+      #            - "--auto-iam-authn"
+      #          securityContext:
+      #            runAsNonRoot: true
+      #          resources:
+      #            requests:
+      #              memory: "500Mi"
+      #              cpu: "200m"
+      #            limits:
+      #              memory: "1Gi"
+      #              cpu: "500m"
+      #          volumes:
+      #            - name: cloud-sql-secret
+      #              secret:
+      #                secretName: fineract-tenants-db-secret
+      #        - name: cloudsqlproxy
+      #          image: cloudsql-proxy:1.17.0
+      #          command: ["/cloud_sql_proxy", "-instances=nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306", "--structured-logs", "--auto-iam-authn"]
+      #          resources:
+      #            requests:
+      #              cpu: 100m
+      #              memory: 100Mi
+      #            limits:
+      #              cpu: 500Mi
+      #              memory: 1Gi
+      #          volumes:
+      #            - name: cloud-sql-secret
+      #              secret:
+      #                secretName: fineract-tenants-db-secret
+      #        - name: init-mydb
+      #          image: mysql:8.0
+      #          env:
+      #            - name: MYSQL_ROOT_PASSWORD
+      #              valueFrom:
+      #                secretKeyRef:
+      #                  name: fineract-tenants-db-secret
+      #                  key: password
+      #          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; until mysql -h cloudsqlproxy -u admin_user -p$MYSQL_ROOT_PASSWORD -e "select 1"; do echo "Waiting for MySQL"; sleep 5; done; echo "MYSQL server has started"; mysql -h cloudsqlproxy -u admin_user -p$MYSQL_ROOT_PASSWORD <<EOSQL GRANT ALL ON *.* TO "root"@"%"; GRANT ALL PRIVILEGES ON kemetx_tenants.* TO "mifos"; GRANT ALL PRIVILEGES ON kemetx_default.* TO "mifos"; EOSQL']
       containers:
         - name: fineract-server
           image: "{{ .Values.fineract.image }}"
@@ -188,13 +152,11 @@ spec:
             - name: FINERACT_HIKARI_JDBC_URL
               value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_JDBC_URL }}"
             - name: FINERACT_HIKARI_USERNAME
-#             value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_USERNAME }}"
               valueFrom:
                 secretKeyRef:
                   name: fineract-tenants-db-secret
                   key: username
             - name: FINERACT_HIKARI_PASSWORD
-              #value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}"
               valueFrom:
                 secretKeyRef:
                   name: fineract-tenants-db-secret
@@ -204,47 +166,45 @@ spec:
             - name: FINERACT_DEFAULT_TENANTDB_PORT
               value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"
             - name: FINERACT_DEFAULT_TENANTDB_IDENTIFIER
-              value:  "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}"
+              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}"
             - name: FINERACT_DEFAULT_TENANTDB_NAME
-              value:   "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME}}"
+              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME }}"
             - name: FINERACT_DEFAULT_TENANTDB_UID
-              #value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_USERNAME }}"
               valueFrom:
                 secretKeyRef:
                   name: fineract-tenants-db-secret
                   key: username
             - name: FINERACT_DEFAULT_TENANTDB_PWD
-              #value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}"
               valueFrom:
                 secretKeyRef:
                   name: fineract-tenants-db-secret
                   key: password
             - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
               value: ''
-{{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
-{{ toYaml ( .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs ) | indent 10 }}
-{{- end }}
-        ports:
-          - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
-            name: fineract-server
-        lifecycle:
-            preStop:
-              exec:
-                command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
+  {{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
+  {{ toYaml ( .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs ) | indent 10 }}
+  {{- end }}
+ports:
+  - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
+    name: fineract-server
+lifecycle:
+  preStop:
+    exec:
+      command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
 
-      - name: cloudsqlproxy
-        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
-        command: ["/cloud-sql-proxy", "--private-ip",
-                "nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306","--auto-iam-authn"]
-        volumeMounts:
-          - name: cloudsql-instance-credentials
-            mountPath: /secrets/cloudsql
-            readOnly: true
+- name: cloudsqlproxy
+  image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
+  command: ["/cloud-sql-proxy", "--private-ip", "nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306", "--auto-iam-authn"]
+  volumeMounts:
+    - name: cloudsql-instance-credentials
+      mountPath: /secrets/cloudsql
+      readOnly: true
 
-      volumes:
-        - name: cloudsql-instance-credentials
-          secret:
-            secretName: fineract-tenants-db-secret
+volumes:
+  - name: cloudsql-instance-credentials
+    secret:
+      secretName: fineract-tenants-db-secret
+
 ---
 {{- if .Values.fineract.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
