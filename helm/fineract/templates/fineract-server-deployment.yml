@@ -59,7 +59,7 @@ spec:
         - name: cloudsqlproxy
           # It is recommended to use the latest version of the Cloud SQL Auth Proxy
           # Make sure to update on a regular schedule!
-          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.2
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
           args:
             # If connecting from a VPC-native GKE cluster, you can use the
             # following flag to have the proxy connect over private IP
@@ -94,6 +94,10 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "500m"
+          volumes:
+             - name: cloud-sql-secret
+               secret:
+                secretName: fineract-tenants-db-secret
 #        - name: cloudsqlproxy
 #          image: cloudsql-proxy:1.17.0 # Update image version as needed
 #          command: [ "/cloud_sql_proxy","-instances=nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306","--structured-logs", "--auto-iam-authn" ]
@@ -171,17 +175,17 @@ spec:
           - name: FINERACT_DEFAULT_TENANTDB_NAME
             value:   "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME}}"
           - name: FINERACT_DEFAULT_TENANTDB_UID
-            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_USERNAME }}"
-#            valueFrom:
-#              secretKeyRef:
-#                name: fineract-tenants-db-secret
-#                key: username
+            #value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_USERNAME }}"
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: username
           - name: FINERACT_DEFAULT_TENANTDB_PWD
-            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}"
-#            valueFrom:
-#              secretKeyRef:
-#                name: fineract-tenants-db-secret
-#                key: password
+            #value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD }}"
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: password
           - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
             value: ''
 {{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
