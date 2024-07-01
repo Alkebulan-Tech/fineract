@@ -68,8 +68,8 @@ spec:
 
 ---
 
-apiVersion: v1
-kind: pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: fineract-server
   labels:
