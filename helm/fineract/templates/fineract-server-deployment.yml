@@ -17,39 +17,38 @@
 #
 
 {{- if .Values.fineract.enabled }}
-apiVersion: v1
-kind: Pod
-metadata:
-  name: cloudsqlproxy
-spec:
-  serviceAccountName: fineract-ksa #need to add this to secret manager
-  containers:
-    - name: cloudsqlproxy
-      image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
-      command: ["/cloud-sql-proxy", "--private-ip",
-                "nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306","--auto-iam-authn"]
-      volumeMounts:
-        - name: cloudsql-instance-credentials
-          mountPath: /secrets/cloudsql
-          readOnly: true
-      resources:
-        requests:
-                    # The proxy's memory use scales linearly with the number of active
-                    # connections. Fewer open connections will use less memory. Adjust
-                    # this value based on your application's requirements.
-         memory: "500Mi"
-                    # The proxy's CPU use scales linearly with the amount of IO between
-                    # the database and the application. Adjust this value based on your
-                    # application's requirements.
-         cpu: "200m"
-        limits:
-          memory: "1Gi"
-          cpu: "500m"
-  volumes:
-    - name: cloudsql-instance-credentials
-      secret:
-        secretName: fineract-tenants-db-secret
-
+#apiVersion: v1
+#kind: Pod
+#metadata:
+#  name: cloudsqlproxy
+#spec:
+#  serviceAccountName: fineract-ksa #need to add this to secret manager
+#  containers:
+#    - name: cloudsqlproxy
+#      image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
+#      command: ["/cloud-sql-proxy", "--private-ip",
+#                "nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306","--auto-iam-authn"]
+#      volumeMounts:
+#        - name: cloudsql-instance-credentials
+#          mountPath: /secrets/cloudsql
+#          readOnly: true
+#      resources:
+#        requests:
+#                    # The proxy's memory use scales linearly with the number of active
+#                    # connections. Fewer open connections will use less memory. Adjust
+#                    # this value based on your application's requirements.
+#         memory: "500Mi"
+#                    # The proxy's CPU use scales linearly with the amount of IO between
+#                    # the database and the application. Adjust this value based on your
+#                    # application's requirements.
+#         cpu: "200m"
+#        limits:
+#          memory: "1Gi"
+#          cpu: "500m"
+#  volumes:
+#    - name: cloudsql-instance-credentials
+#      secret:
+#        secretName: fineract-tenants-db-secret
 ---
 apiVersion: v1
 kind: Service
@@ -70,7 +69,7 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: pod
 metadata:
   name: fineract-server
   labels:
@@ -88,7 +87,7 @@ spec:
         app: fineract-server
         tier: backend
     spec:
-#      serviceAccountName: fineract-ksa #need to add this to secret manager
+      serviceAccountName: fineract-ksa #need to add this to secret manager
 #      initContainers:
 #        - name: cloudsqlproxy
 #          # It is recommended to use the latest version of the Cloud SQL Auth Proxy
@@ -232,6 +231,32 @@ spec:
             preStop:
               exec:
                 command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
+
+  - name: cloudsqlproxy
+    image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
+    command: [ "/cloud-sql-proxy", "--private-ip",
+               "nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306","--auto-iam-authn" ]
+    volumeMounts:
+      - name: cloudsql-instance-credentials
+        mountPath: /secrets/cloudsql
+        readOnly: true
+#    resources:
+#      requests:
+#        # The proxy's memory use scales linearly with the number of active
+#        # connections. Fewer open connections will use less memory. Adjust
+#        # this value based on your application's requirements.
+#        memory: "500Mi"
+#          # The proxy's CPU use scales linearly with the amount of IO between
+#        # the database and the application. Adjust this value based on your
+#        # application's requirements.
+#        cpu: "200m"
+#      limits:
+#        memory: "1Gi"
+#        cpu: "500m"
+    volumes:
+      - name: cloudsql-instance-credentials
+        secret:
+          secretName: fineract-tenants-db-secret
 
 ---
 {{- if .Values.fineract.ingress.enabled }}
