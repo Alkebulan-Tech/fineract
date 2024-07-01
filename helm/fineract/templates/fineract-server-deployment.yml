@@ -101,45 +101,45 @@ spec:
           requests:
             cpu: "{{ .Values.fineract.resources.requests.cpu }}"
             memory: "{{ .Values.fineract.resources.requests.memory }}"
-          env:
-            - name: FINERACT_SERVER_PORT
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}"
-            - name: FINERACT_NODE_ID
-              value: '1'
-            - name: FINERACT_HIKARI_DRIVER_CLASS_NAME
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_DRIVER_CLASS_NAME }}"
-            - name: FINERACT_HIKARI_JDBC_URL
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_JDBC_URL }}"
-            - name: FINERACT_HIKARI_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: fineract-tenants-db-secret
-                  key: username
-            - name: FINERACT_HIKARI_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: fineract-tenants-db-secret
-                  key: password
-            - name: FINERACT_DEFAULT_TENANTDB_HOSTNAME
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
-            - name: FINERACT_DEFAULT_TENANTDB_PORT
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"
-            - name: FINERACT_DEFAULT_TENANTDB_IDENTIFIER
-              value:  "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}"
-            - name: FINERACT_DEFAULT_TENANTDB_NAME
-              value:   "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME}}"
-            - name: FINERACT_DEFAULT_TENANTDB_UID
-              valueFrom:
-                secretKeyRef:
-                  name: fineract-tenants-db-secret
-                  key: username
-            - name: FINERACT_DEFAULT_TENANTDB_PWD
-              valueFrom:
-                secretKeyRef:
-                  name: fineract-tenants-db-secret
-                  key: password
-            - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
-              value: ''
+        env:
+          - name: FINERACT_SERVER_PORT
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}"
+          - name: FINERACT_NODE_ID
+            value: '1'
+          - name: FINERACT_HIKARI_DRIVER_CLASS_NAME
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_DRIVER_CLASS_NAME }}"
+          - name: FINERACT_HIKARI_JDBC_URL
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_JDBC_URL }}"
+          - name: FINERACT_HIKARI_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: username
+          - name: FINERACT_HIKARI_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: password
+          - name: FINERACT_DEFAULT_TENANTDB_HOSTNAME
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
+          - name: FINERACT_DEFAULT_TENANTDB_PORT
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"
+          - name: FINERACT_DEFAULT_TENANTDB_IDENTIFIER
+            value:  "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}"
+          - name: FINERACT_DEFAULT_TENANTDB_NAME
+            value:   "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME}}"
+          - name: FINERACT_DEFAULT_TENANTDB_UID
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: username
+          - name: FINERACT_DEFAULT_TENANTDB_PWD
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: password
+          - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
+            value: ''
   {{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
   {{ toYaml ( .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs ) | indent 10 }}
   {{- end }}
