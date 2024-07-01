@@ -64,7 +64,7 @@ spec:
 #            # If connecting from a VPC-native GKE cluster, you can use the
 #            # following flag to have the proxy connect over private IP
 #            # - "--private-ip"
-#            - "nodal-linker-425007-t9:us-central1:kemetx-instance"
+#            - "-instances=nodal-linker-425007-t9:us-central1:kemetx-instance"
 #            # Enable structured logging with LogEntry format:
 #            - "--structured-logs"
 #
