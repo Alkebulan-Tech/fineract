@@ -110,14 +110,13 @@ spec:
   {{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
   {{ toYaml ( .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs ) | indent 10 }}
   {{- end }}
-ports:
-  - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
-    name: fineract-server
-lifecycle:
-  preStop:
-    exec:
-      command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
-
+        ports:
+          - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
+            name: fineract-server
+        lifecycle:
+            preStop:
+              exec:
+                command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
 ---
 {{- if .Values.fineract.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
