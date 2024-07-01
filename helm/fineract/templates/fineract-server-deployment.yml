@@ -27,7 +27,7 @@ spec:
     - name: cloudsql-proxy
       image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
       command: ["/cloud-sql-proxy", "--private-ip",
-                "nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306","--auto-iam-authn"]
+                "nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306","--auto-iam-authn"]
       volumeMounts:
         - name: cloudsql-instance-credentials
           mountPath: /secrets/cloudsql
