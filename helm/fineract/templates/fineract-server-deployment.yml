@@ -91,16 +91,16 @@ spec:
 #          image: busybox:1.28
 #          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}" "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
       containers:
-        - name: fineract-server
-          image: "{{ .Values.fineract.image }}"
-          imagePullPolicy: Always
-          resources:
-            limits:
-              cpu: "{{ .Values.fineract.resources.limits.cpu }}"
-              memory: "{{ .Values.fineract.resources.limits.memory }}"
-            requests:
-              cpu: "{{ .Values.fineract.resources.requests.cpu }}"
-              memory: "{{ .Values.fineract.resources.requests.memory }}"
+      - name: fineract-server
+        image: "{{ .Values.fineract.image }}"
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: "{{ .Values.fineract.resources.limits.cpu }}"
+            memory: "{{ .Values.fineract.resources.limits.memory }}"
+          requests:
+            cpu: "{{ .Values.fineract.resources.requests.cpu }}"
+            memory: "{{ .Values.fineract.resources.requests.memory }}"
           env:
             - name: FINERACT_SERVER_PORT
               value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}"
@@ -140,19 +140,6 @@ spec:
                   key: password
             - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
               value: ''
-
-        - name: cloudsqlproxy
-          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
-          command: [ "/cloud-sql-proxy", "--private-ip",
-                     "nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306","--auto-iam-authn" ]
-          volumeMounts:
-            - name: cloudsql-instance-credentials
-              mountPath: /secrets/cloudsql
-              readOnly: true
-        volumes:
-        - name: cloudsql-instance-credentials
-          secret:
-            secretName: fineract-tenants-db-secret
   {{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
   {{ toYaml ( .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs ) | indent 10 }}
   {{- end }}
