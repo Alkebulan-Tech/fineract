@@ -25,7 +25,7 @@ spec:
   serviceAccountName: fineract-ksa #need to add this to secret manager
   containers:
     - name: cloudsql-proxy
-      image: gcr.io/cloudsql-docker/gce-proxy:1.16
+      image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
       command: ["/cloud_sql_proxy",
                 "-instances=nodal-linker-425007-t9:us-central1:kemetx-instance=tcp:3306","--auto-iam-authn"]
       volumeMounts:
