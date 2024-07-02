@@ -65,7 +65,7 @@ spec:
               memory: "{{ .Values.fineract.resources.requests.memory }}"
           env:
             - name: FINERACT_SERVER_PORT
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}"
+              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT | quote }}"
             - name: FINERACT_NODE_ID
               value: '1'
             - name: FINERACT_HIKARI_DRIVER_CLASS_NAME
@@ -85,7 +85,7 @@ spec:
             - name: FINERACT_DEFAULT_TENANTDB_HOSTNAME
               value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
             - name: FINERACT_DEFAULT_TENANTDB_PORT
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"
+              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT | quote }}"
             - name: FINERACT_DEFAULT_TENANTDB_IDENTIFIER
               value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}"
             - name: FINERACT_DEFAULT_TENANTDB_NAME
@@ -119,9 +119,9 @@ kind: Ingress
 metadata:
   name: fineract-ingress
   annotations:
-  {{- if .Values.fineract.ingress.annotations }}
-  {{ toYaml .Values.fineract.ingress.annotations | indent 4 }}
-  {{- end }}
+    {{- if .Values.fineract.ingress.annotations }}
+    {{ toYaml .Values.fineract.ingress.annotations | indent 4 }}
+    {{- end }}
 spec:
   rules:
     - host: "{{ .Values.fineract.ingress.hostname }}"
@@ -154,10 +154,10 @@ spec:
                 name: self-service
                 port:
                   number: 8082
-  #tls:
-  #  - hosts:
-  #      - "{{ .Values.fineract.ingress.wildcardhostname }}"
-  #    secretName: "{{ .Values.tls }}"
+  # tls:
+  #   - hosts:
+  #       - "{{ .Values.fineract.ingress.wildcardhostname }}"
+  #     secretName: "{{ .Values.tls }}"
 {{- end }}
 ---
 apiVersion: v1
