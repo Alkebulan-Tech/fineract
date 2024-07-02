@@ -54,7 +54,7 @@ spec:
         app: fineract-server
         tier: backend
     spec:
-      serviceAccountName: fineract-ksa
+      serviceAccountName: fineract
 #      initContainers:
 #        - name: init-mydb
 #          image: busybox:1.28
