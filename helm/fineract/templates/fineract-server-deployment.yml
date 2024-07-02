@@ -34,6 +34,7 @@ spec:
   type: ClusterIP
 
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,17 +48,17 @@ spec:
       tier: backend
   strategy:
     type: Recreate
-  template:
+  template: 
     metadata:
       labels:
         app: fineract-server
         tier: backend
     spec:
-      # initContainers:
-      #   - name: init-mydb
-      #     image: busybox:1.28
-      #     command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}" "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
-      containers:
+      initContainers:
+        - name: init-mydb
+          image: busybox:1.28
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}" "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
+      containers: 
       - name: fineract-server
         image: "{{ .Values.fineract.image }}"
         imagePullPolicy: Always
@@ -92,9 +93,9 @@ spec:
           - name: FINERACT_DEFAULT_TENANTDB_PORT
             value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"
           - name: FINERACT_DEFAULT_TENANTDB_IDENTIFIER
-            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}"
+            value:  "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}" 
           - name: FINERACT_DEFAULT_TENANTDB_NAME
-            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME }}"
+            value:   "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME}}"
           - name: FINERACT_DEFAULT_TENANTDB_UID
             valueFrom:
               secretKeyRef:
@@ -107,16 +108,17 @@ spec:
                 key: password
           - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
             value: ''
-          {{- if .Values.fineract.deployment.extraEnvs }}
-          {{ toYaml .Values.fineract.deployment.extraEnvs | indent 10 }}
-          {{- end }}
+{{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
+{{ toYaml ( .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs ) | indent 10 }}
+{{- end }}
         ports:
-        - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
-          name: fineract-server
+          - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
+            name: fineract-server
         lifecycle:
-          preStop:
-            exec:
-              command: ['sh', '-c', '{{ .Values.fineract.preStopScript }}']
+            preStop:
+              exec:
+                command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
+
 ---
 {{- if .Values.fineract.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
@@ -124,45 +126,45 @@ kind: Ingress
 metadata:
   name: fineract-ingress
   annotations:
-    {{- if .Values.fineract.ingress.annotations }}
-    {{ toYaml .Values.fineract.ingress.annotations | indent 4 }}
-    {{- end }}
+{{- if .Values.fineract.ingress.annotations }}
+{{ toYaml .Values.fineract.ingress.annotations | indent 4 }}
+{{- end }}
 spec:
   rules:
-  - host: "{{ .Values.fineract.ingress.hostname }}"
-    http:
-      paths:
-      - path: "{{ .Values.fineract.ingress.path }}"
-        pathType: Prefix
-        backend:
-          service:
-            name: fineract-server
-            port: 
-              number: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
-  - host: "{{ .Values.webapp.ingress.hostname }}"
-    http:
-      paths:
-      - path: "{{ .Values.webapp.ingress.path }}"
-        pathType: Prefix
-        backend:
-          service:
-            name: web-app
-            port: 
-              number: 8081
-  - host: "{{ .Values.selfservice.ingress.hostname }}"
-    http:
-      paths:
-      - path: "{{ .Values.selfservice.ingress.path }}"
-        pathType: Prefix
-        backend:
-          service:
-            name: self-service
-            port: 
-              number: 8082
-  # tls:
-  # - hosts:
-  #   - "{{ .Values.fineract.ingress.wildcardhostname }}"
-  #   secretName: "{{ .Values.tls }}"
+    - host: "{{ .Values.fineract.ingress.hostname }}"
+      http:
+        paths:
+          - path: "{{ .Values.fineract.ingress.path }}"
+            pathType: Prefix
+            backend:
+              service:
+                name: fineract-server
+                port: 
+                  number: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
+    - host: "{{ .Values.webapp.ingress.hostname }}"
+      http:
+        paths:
+          - path: "{{ .Values.webapp.ingress.path }}"
+            pathType: Prefix
+            backend:
+              service:
+                name: web-app
+                port: 
+                  number: 8081
+    - host: "{{ .Values.selfservice.ingress.hostname }}"
+      http:
+        paths:
+          - path: "{{ .Values.selfservice.ingress.path }}"
+            pathType: Prefix
+            backend:
+              service:
+                name: self-service
+                port: 
+                  number: 8082
+  #tls:
+  #  - hosts:
+  #      - "{{ .Values.fineract.ingress.wildcardhostname }}"
+  #    secretName: "{{ .Values.tls }}"
 {{- end }}
 ---
 apiVersion: v1
@@ -172,5 +174,6 @@ metadata:
 type: Opaque
 data:
   username: "bWlmb3M="
-  password: "azNtM1R4RjFOM3JhYzc="
-{{- end }}
+  password: "cGFzc3dvcmQ="
+{{- end}}
+
