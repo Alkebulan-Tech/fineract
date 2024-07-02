@@ -25,13 +25,14 @@ metadata:
   name: fineract-server
 spec:
   ports:
-    - protocol: TCP
-      port: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
-      targetPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
+  - protocol: TCP
+    port: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
+    targetPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
   selector:
     app: fineract-server
     tier: backend
   type: ClusterIP
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -52,66 +53,70 @@ spec:
         app: fineract-server
         tier: backend
     spec:
+      # initContainers:
+      #   - name: init-mydb
+      #     image: busybox:1.28
+      #     command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}" "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
       containers:
-        - name: fineract-server
-          image: "{{ .Values.fineract.image }}"
-          imagePullPolicy: Always
-          resources:
-            limits:
-              cpu: "{{ .Values.fineract.resources.limits.cpu }}"
-              memory: "{{ .Values.fineract.resources.limits.memory }}"
-            requests:
-              cpu: "{{ .Values.fineract.resources.requests.cpu }}"
-              memory: "{{ .Values.fineract.resources.requests.memory }}"
-          env:
-            - name: FINERACT_SERVER_PORT
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT | quote }}"
-            - name: FINERACT_NODE_ID
-              value: '1'
-            - name: FINERACT_HIKARI_DRIVER_CLASS_NAME
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_DRIVER_CLASS_NAME }}"
-            - name: FINERACT_HIKARI_JDBC_URL
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_JDBC_URL }}"
-            - name: FINERACT_HIKARI_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: fineract-tenants-db-secret
-                  key: username
-            - name: FINERACT_HIKARI_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: fineract-tenants-db-secret
-                  key: password
-            - name: FINERACT_DEFAULT_TENANTDB_HOSTNAME
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
-            - name: FINERACT_DEFAULT_TENANTDB_PORT
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT | quote }}"
-            - name: FINERACT_DEFAULT_TENANTDB_IDENTIFIER
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}"
-            - name: FINERACT_DEFAULT_TENANTDB_NAME
-              value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME }}"
-            - name: FINERACT_DEFAULT_TENANTDB_UID
-              valueFrom:
-                secretKeyRef:
-                  name: fineract-tenants-db-secret
-                  key: username
-            - name: FINERACT_DEFAULT_TENANTDB_PWD
-              valueFrom:
-                secretKeyRef:
-                  name: fineract-tenants-db-secret
-                  key: password
-            - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
-              value: ''
-          {{- if .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs }}
-          {{ toYaml ( .Values.extraEnvs | default .Values.fineract.deployment.extraEnvs ) | indent 10 }}
+      - name: fineract-server
+        image: "{{ .Values.fineract.image }}"
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: "{{ .Values.fineract.resources.limits.cpu }}"
+            memory: "{{ .Values.fineract.resources.limits.memory }}"
+          requests:
+            cpu: "{{ .Values.fineract.resources.requests.cpu }}"
+            memory: "{{ .Values.fineract.resources.requests.memory }}"
+        env:
+          - name: FINERACT_SERVER_PORT
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}"
+          - name: FINERACT_NODE_ID
+            value: '1'
+          - name: FINERACT_HIKARI_DRIVER_CLASS_NAME
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_DRIVER_CLASS_NAME }}"
+          - name: FINERACT_HIKARI_JDBC_URL
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_HIKARI_JDBC_URL }}"
+          - name: FINERACT_HIKARI_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: username
+          - name: FINERACT_HIKARI_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: password
+          - name: FINERACT_DEFAULT_TENANTDB_HOSTNAME
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}"
+          - name: FINERACT_DEFAULT_TENANTDB_PORT
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"
+          - name: FINERACT_DEFAULT_TENANTDB_IDENTIFIER
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}"
+          - name: FINERACT_DEFAULT_TENANTDB_NAME
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME }}"
+          - name: FINERACT_DEFAULT_TENANTDB_UID
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: username
+          - name: FINERACT_DEFAULT_TENANTDB_PWD
+            valueFrom:
+              secretKeyRef:
+                name: fineract-tenants-db-secret
+                key: password
+          - name: FINERACT_DEFAULT_TENANTDB_CONN_PARAMS
+            value: ''
+          {{- if .Values.fineract.deployment.extraEnvs }}
+          {{ toYaml .Values.fineract.deployment.extraEnvs | indent 10 }}
           {{- end }}
-          ports:
-            - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
-              name: fineract-server
-          lifecycle:
-            preStop:
-              exec:
-                command: ['sh', '-c', '{{ .Values.fineract.preStopScript }}']
+        ports:
+        - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
+          name: fineract-server
+        lifecycle:
+          preStop:
+            exec:
+              command: ['sh', '-c', '{{ .Values.fineract.preStopScript }}']
 ---
 {{- if .Values.fineract.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
@@ -124,40 +129,40 @@ metadata:
     {{- end }}
 spec:
   rules:
-    - host: "{{ .Values.fineract.ingress.hostname }}"
-      http:
-        paths:
-          - path: "{{ .Values.fineract.ingress.path }}"
-            pathType: Prefix
-            backend:
-              service:
-                name: fineract-server
-                port:
-                  number: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
-    - host: "{{ .Values.webapp.ingress.hostname }}"
-      http:
-        paths:
-          - path: "{{ .Values.webapp.ingress.path }}"
-            pathType: Prefix
-            backend:
-              service:
-                name: web-app
-                port:
-                  number: 8081
-    - host: "{{ .Values.selfservice.ingress.hostname }}"
-      http:
-        paths:
-          - path: "{{ .Values.selfservice.ingress.path }}"
-            pathType: Prefix
-            backend:
-              service:
-                name: self-service
-                port:
-                  number: 8082
+  - host: "{{ .Values.fineract.ingress.hostname }}"
+    http:
+      paths:
+      - path: "{{ .Values.fineract.ingress.path }}"
+        pathType: Prefix
+        backend:
+          service:
+            name: fineract-server
+            port: 
+              number: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
+  - host: "{{ .Values.webapp.ingress.hostname }}"
+    http:
+      paths:
+      - path: "{{ .Values.webapp.ingress.path }}"
+        pathType: Prefix
+        backend:
+          service:
+            name: web-app
+            port: 
+              number: 8081
+  - host: "{{ .Values.selfservice.ingress.hostname }}"
+    http:
+      paths:
+      - path: "{{ .Values.selfservice.ingress.path }}"
+        pathType: Prefix
+        backend:
+          service:
+            name: self-service
+            port: 
+              number: 8082
   # tls:
-  #   - hosts:
-  #       - "{{ .Values.fineract.ingress.wildcardhostname }}"
-  #     secretName: "{{ .Values.tls }}"
+  # - hosts:
+  #   - "{{ .Values.fineract.ingress.wildcardhostname }}"
+  #   secretName: "{{ .Values.tls }}"
 {{- end }}
 ---
 apiVersion: v1
