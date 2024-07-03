@@ -42,7 +42,7 @@ metadata:
   labels:
     app: fineract-server
 spec:
-  serviceAccountName: fineract-ksa
+  serviceAccountName: cloudsql-ksa
   selector:
     matchLabels:
       app: fineract-server
