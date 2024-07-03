@@ -163,17 +163,6 @@ spec:
           - name: cloudsql-instance-credentials
             mountPath: /secrets/cloudsql
             readOnly: true
-        env:
-        - name: DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: cloudsql-instance-credentials
-              key: username
-        - name: DB_PASS
-          valueFrom:
-            secretKeyRef:
-              name: cloudsql-instance-credentials
-              key: password
       volumes:
         - name: cloudsql-instance-credentials
           secret:
@@ -252,3 +241,4 @@ data:
     GRANT ALL ON *.* TO 'root'@'%';
     GRANT ALL PRIVILEGES ON `kemetx_tenants`.* TO 'mifos';
     GRANT ALL PRIVILEGES ON `kemetx_default`.* TO 'mifos';
+{{- end}}
