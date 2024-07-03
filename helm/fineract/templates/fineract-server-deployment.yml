@@ -42,7 +42,6 @@ metadata:
   labels:
     app: fineract-server
 spec:
-  serviceAccountName: cloudsql-ksa
   selector:
     matchLabels:
       app: fineract-server
@@ -55,6 +54,7 @@ spec:
         app: fineract-server
         tier: backend
     spec:
+      serviceAccountName: cloudsql-ksa
 #      initContainers:
 #        - name: init-mydb
 #          image: busybox:1.28
@@ -120,9 +120,45 @@ spec:
               exec:
                 command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
                 
-      - name: cloudsqlproxy
-        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.3
-        command: ["/cloud-sql-proxy","nodal-linker-425007-t9:us-central1:kemetx-instance?port=3306"]
+      # [START cloud_sql_proxy_k8s_container]
+      - name: cloud-sql-proxy
+        # It is recommended to use the latest version of the Cloud SQL Auth Proxy
+        # Make sure to update on a regular schedule!
+        image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4
+        args:
+          # If connecting from a VPC-native GKE cluster, you can use the
+          # following flag to have the proxy connect over private IP
+          # - "--private-ip"
+
+          # Enable structured logging with LogEntry format:
+          - "--structured-logs"
+
+          # Replace DB_PORT with the port the proxy should listen on
+          - "--port=3306"
+          - "nodal-linker-425007-t9:us-central1:kemetx-instance"
+        
+        securityContext:
+          # The default Cloud SQL Auth Proxy image runs as the
+          # "nonroot" user and group (uid: 65532) by default.
+          runAsNonRoot: true
+        # You should use resource requests/limits as a best practice to prevent
+        # pods from consuming too many resources and affecting the execution of
+        # other pods. You should adjust the following values based on what your
+        # application needs. For details, see
+        # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        resources:
+          requests:
+            # The proxy's memory use scales linearly with the number of active
+            # connections. Fewer open connections will use less memory. Adjust
+            # this value based on your application's requirements.
+            memory: "500Mi"
+            # The proxy's CPU use scales linearly with the amount of IO between
+            # the database and the application. Adjust this value based on your
+            # application's requirements.
+            cpu:    "500m"
+          limits:
+            memory: "1000Mi"
+            cpu: "1"
         volumeMounts:
           - name: cloudsql-instance-credentials
             mountPath: /secrets/cloudsql
@@ -132,7 +168,7 @@ spec:
         - name: cloudsql-instance-credentials
           secret:
             secretName: fineract-tenants-db-secret
-
+            # [END cloud_sql_proxy_k8s_container]
 ---
 {{- if .Values.fineract.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
