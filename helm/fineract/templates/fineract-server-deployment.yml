@@ -236,4 +236,19 @@ data:
   username: "bWlmb3M="
   password: "azNtM1R4RjFOM3JhYzc="
 {{- end}}
-
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-preload-data-config
+  labels:
+    name: mysql-data-store
+    app: mysql-gke-deployment
+  namespace: development
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS `kemetx_tenants`;
+    CREATE DATABASE IF NOT EXISTS `kemetx_default`;
+    GRANT ALL ON *.* TO 'root'@'%';
+    GRANT ALL PRIVILEGES ON `kemetx_tenants`.* TO 'mifos';
+    GRANT ALL PRIVILEGES ON `kemetx_default`.* TO 'mifos';
