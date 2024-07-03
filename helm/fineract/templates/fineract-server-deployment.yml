@@ -244,7 +244,7 @@ metadata:
   labels:
     name: mysql-data-store
     app: mysql-gke-deployment
-  namespace: development
+  #namespace: development
 data:
   init.sql: |
     CREATE DATABASE IF NOT EXISTS `kemetx_tenants`;
