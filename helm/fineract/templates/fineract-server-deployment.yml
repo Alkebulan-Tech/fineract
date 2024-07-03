@@ -174,20 +174,6 @@ spec:
             secretKeyRef:
               name: cloudsql-instance-credentials
               key: password
-        auth:
-          username: DB_USER
-          password: DB_PASS
-          rootPassword: DB_PASS
-        initdbScripts:
-          setup.sql: |-
-#       create databases
-           CREATE DATABASE IF NOT EXISTS `kemetx_tenants`;
-           CREATE DATABASE IF NOT EXISTS `kemetx_default`;
-#       create root user and grant rights
-           GRANT ALL ON *.* TO 'root'@'%';
-           GRANT ALL PRIVILEGES ON `kemetx_tenants`.* TO 'mifos';
-           GRANT ALL PRIVILEGES ON `kemetx_default`.* TO 'mifos';
-
       volumes:
         - name: cloudsql-instance-credentials
           secret:
