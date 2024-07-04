@@ -101,6 +101,7 @@ jobs:
         FINERACT_DEFAULT_TENANTDB_NAME_TEST: $(gcloud secrets versions access latest --secret=FINERACT_DEFAULT_TENANTDB_NAME_TEST)
         FINERACT_HIKARI_PASSWORD_TEST: $(gcloud secrets versions access latest --secret=FINERACT_HIKARI_PASSWORD_TEST)
         FINERACT_HIKARI_USERNAME_TEST: $(gcloud secrets versions access latest --secret=FINERACT_HIKARI_USERNAME_TEST)
+        FINERACT_DEFAULT_TENANTDB_HOSTNAME_TEST: $(gcloud secrets versions access latest --secret=FINERACT_DEFAULT_TENANTDB_HOSTNAME_TEST)
       run: |
         # Add Helm repo if needed (adjust to your Helm chart repository)
         helm repo add camunda-platform https://helm.camunda.io
@@ -115,7 +116,11 @@ jobs:
         
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
         --install --namespace paymenthub-back-end \
-        --set fineract.image=${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}
-#        --set image.tag=$GITHUB_SHA \
-#        --set deploymentName=ph-ee-backend-test \
-#        --set namespace=paymenthub-test
+        --set fineract.image=${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA} \
+        --set fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER=${{ env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER_TEST }} \
+        --set fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME=${{ env.FINERACT_DEFAULT_TENANTDB_NAME_TEST }} \
+        --set fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME=${{ env.FINERACT_DEFAULT_TENANTDB_HOSTNAME_TEST }} \
+        --set fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PWD=${{ env.FINERACT_HIKARI_PASSWORD_TEST }} \
+        --set fineract.spec.template.spec.containers.env.FINERACT_HIKARI_PASSWORD=${{ env.FINERACT_HIKARI_PASSWORD_TEST }} \
+        --set fineract.spec.template.spec.containers.env.FINERACT_HIKARI_USERNAME=${{ env.FINERACT_HIKARI_USERNAME_TEST }} \
+        --set fineract.spec.template.spec.containers.env.FINERACT_ADMIN_USERNAME=${{ env.FINERACT_HIKARI_USERNAME_TEST }}
