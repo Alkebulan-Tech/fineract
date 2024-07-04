@@ -82,7 +82,7 @@ jobs:
     #      --build-arg GITHUB_REF="$GITHUB_REF" \
     #      .
     - name: Build the image
-      run: ./gradlew --no-daemon --console=plain :fineract-provider:clean :fineract-provider:compileJava :fineract-provider:jibDockerBuild -x test -x cucumber
+      run: ./gradlew --no-daemon --console=plain :fineract-core:clean :fineract-core:compileJava :fineract-provider:clean :fineract-provider:compileJava :fineract-provider:jibDockerBuild -x test -x cucumber
       env:
         GAR_LOCATION: ${{ env.GAR_LOCATION }}
         GITHUB_SHA: ${{ github.sha }}
