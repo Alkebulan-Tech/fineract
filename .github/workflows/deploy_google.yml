@@ -110,6 +110,9 @@ jobs:
 #        kubectl get services -o wide
         # Deploy the Docker image to the GKE cluster using Helm
     - name: Deploy
+      env:
+        FINERACT_DEFAULT_TENANTDB_IDENTIFIER_TEST: $(gcloud secrets versions access latest --secret=FINERACT_DEFAULT_TENANTDB_IDENTIFIER_TEST)
+
       run: |
         # Add Helm repo if needed (adjust to your Helm chart repository)
         helm repo add camunda-platform https://helm.camunda.io
@@ -128,5 +131,3 @@ jobs:
 #        --set image.tag=$GITHUB_SHA \
 #        --set deploymentName=ph-ee-backend-test \
 #        --set namespace=paymenthub-test
-      env:
-        FINERACT_DEFAULT_TENANTDB_IDENTIFIER_TEST: $(gcloud secrets versions access latest --secret=FINERACT_DEFAULT_TENANTDB_IDENTIFIER_TEST)
