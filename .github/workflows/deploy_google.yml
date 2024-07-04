@@ -128,3 +128,5 @@ jobs:
 #        --set image.tag=$GITHUB_SHA \
 #        --set deploymentName=ph-ee-backend-test \
 #        --set namespace=paymenthub-test
+      env:
+        FINERACT_DEFAULT_TENANTDB_IDENTIFIER_TEST: $(gcloud secrets versions access latest --secret=FINERACT_DEFAULT_TENANTDB_IDENTIFIER_TEST)
