@@ -13,10 +13,10 @@ fineract:
             FINERACT_DEFAULT_TENANTDB_NAME: "projects/nodal-linker-425007-t9/secrets/FINERACT_DEFAULT_TENANTDB_NAME_TEST/versions/latest"
             FINERACT_DEFAULT_TENANTDB_HOSTNAME: 127.0.0.1
             FINERACT_DEFAULT_TENANTDB_PORT: 3306
-            FINERACT_HIKARI_PASSWORD: "{{ secrets.FINERACT_HIKARI_PASSWORD_TEST }}"
-            FINERACT_DEFAULT_TENANTDB_PWD: "{{ secrets.FINERACT_HIKARI_PASSWORD_TEST }}"
-            FINERACT_HIKARI_USERNAME: "{{ secrets.FINERACT_HIKARI_USERNAME_TEST }}"
-            FINERACT_ADMIN_USERNAME: "{{ secrets.FINERACT_ADMIN_USERNAME_TEST }}"
+            FINERACT_HIKARI_PASSWORD: "projects/nodal-linker-425007-t9/secrets/FINERACT_HIKARI_PASSWORD_TEST/versions/latest"
+            FINERACT_DEFAULT_TENANTDB_PWD: "projects/nodal-linker-425007-t9/secrets/FINERACT_HIKARI_PASSWORD_TEST/versions/latest"
+            FINERACT_HIKARI_USERNAME: "projects/nodal-linker-425007-t9/secrets/FINERACT_HIKARI_USERNAME_TEST/versions/latest"
+            FINERACT_ADMIN_USERNAME: "projects/nodal-linker-425007-t9/secrets/FINERACT_HIKARI_USERNAME_TEST/versions/latest"
             FINERACT_HIKARI_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
             FINERACT_HIKARI_JDBC_URL: 'jdbc:mysql://127.0.0.1:3306/kemetx_tenants?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true'
             FINERACT_SERVER_PORT: 8080
