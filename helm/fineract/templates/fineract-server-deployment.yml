@@ -227,7 +227,7 @@ metadata:
   name: fineract-tenants-db-secret
 type: Opaque
 data:
-  username: "cm9vdA=="
+  username: "YWRtaW5fdXNlcg=="
   password: "azNtM1R4RjFOM3JhYzc="
 {{- end}}
 ---
