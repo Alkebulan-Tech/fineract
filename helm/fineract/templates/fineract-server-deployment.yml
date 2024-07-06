@@ -270,7 +270,6 @@ spec:
           args:
             - /nginx-ingress-controller
             - --configmap=default/nginx-ingress-controller
-            - --annotations-prefix=kubernetes.io
           env:
             - name: POD_NAME
               valueFrom:
