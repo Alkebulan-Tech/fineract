@@ -118,8 +118,11 @@ jobs:
         helm repo add kong https://charts.konghq.com
         helm repo add keycloak https://codecentric.github.io/helm-charts
         helm repo add redis https://charts.bitnami.com/bitnami
+        helm repo add nginx-stable https://helm.nginx.com/stable
         
         helm repo update
+        
+        helm install fineract-ingress-nginx nginx-stable/ingress-nginx
         
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
         --install --namespace paymenthub-back-end \
