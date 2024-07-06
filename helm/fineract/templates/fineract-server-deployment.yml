@@ -245,7 +245,9 @@ data:
     GRANT ALL ON *.* TO 'root'@'%';
     GRANT ALL PRIVILEGES ON `fineract_tenants`.* TO 'mifos';
     GRANT ALL PRIVILEGES ON `fineract_default`.* TO 'mifos';
+
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
