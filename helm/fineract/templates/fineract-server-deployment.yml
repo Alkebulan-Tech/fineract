@@ -248,6 +248,56 @@ data:
 
 ---
 
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-controller
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ingress-reader
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "extensions"
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "networking.k8s.io"
+    resources:
+      - ingresses
+      - ingressclasses
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nginx-ingress-controller-viewer
+subjects:
+  - kind: ServiceAccount
+    name: nginx-ingress-controller
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: ingress-reader
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -263,15 +313,50 @@ spec:
       labels:
         app: nginx-ingress
     spec:
+      serviceAccountName: nginx-ingress-controller
       containers:
         - name: nginx-ingress-controller
           image: k8s.gcr.io/ingress-nginx/controller:v1.1.1
           command:
             - /nginx-ingress-controller
-          # Add any necessary command line arguments or environment variables here
-      serviceAccountName: nginx-ingress-controller  # Specify dedicated service account
 ---
-# RBAC ClusterRoleBinding (assuming a ClusterRole named "ingress-reader" exists)
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-controller
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ingress-reader
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "extensions"
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "networking.k8s.io"
+    resources:
+      - ingresses
+      - ingressclasses
+    verbs:
+      - get
+      - list
+      - watch
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -282,7 +367,29 @@ subjects:
     namespace: kube-system
 roleRef:
   kind: ClusterRole
-  name: ingress-reader  # Reference existing ClusterRole with read permissions
+  name: ingress-reader
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-ingress
+  template:
+    metadata:
+      labels:
+        app: nginx-ingress
+    spec:
+      serviceAccountName: nginx-ingress-controller
+      containers:
+        - name: nginx-ingress-controller
+          image: k8s.gcr.io/ingress-nginx/controller:v1.1.1
+          command:
+            - /nginx-ingress-controller
 
 {{- end }}
