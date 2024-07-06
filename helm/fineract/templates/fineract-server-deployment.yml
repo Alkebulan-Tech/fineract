@@ -246,3 +246,22 @@ data:
     GRANT ALL ON *.* TO 'root'@'%';
     GRANT ALL PRIVILEGES ON `fineract_tenants`.* TO 'mifos';
     GRANT ALL PRIVILEGES ON `fineract_default`.* TO 'mifos';
+---
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-ingress
+  template:
+    metadata:
+      labels:
+        app: nginx-ingress
+    spec:
+      containers:
+        - name: nginx-ingress-controller
+          image: k8s.gcr.io/ingress-nginx/controller:v1.1.1
+          # Add any necessary command line arguments or environment variables here
