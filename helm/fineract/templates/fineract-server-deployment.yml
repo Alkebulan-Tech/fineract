@@ -284,3 +284,5 @@ roleRef:
   kind: ClusterRole
   name: ingress-reader  # Reference existing ClusterRole with read permissions
   apiGroup: rbac.authorization.k8s.io
+
+{{- end }}
