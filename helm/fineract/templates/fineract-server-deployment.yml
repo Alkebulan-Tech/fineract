@@ -267,8 +267,10 @@ spec:
       containers:
         - name: nginx-ingress-controller
           image: k8s.gcr.io/ingress-nginx/controller:v1.7.0
-          command:
-            - /nginx-ingress-controller --configmap=default/nginx-ingress-controller --annotations-prefix=kubernetes.io
+          args:
+            - /nginx-ingress-controller
+            - --configmap=default/nginx-ingress-controller
+            - --annotations-prefix=kubernetes.io
           env:
             - name: POD_NAME
               valueFrom:
