@@ -229,7 +229,6 @@ type: Opaque
 data:
   username: "YWRtaW5fdXNlcg=="
   password: "azNtM1R4RjFOM3JhYzc="
-{{- end}}
 ---
 apiVersion: v1
 kind: ConfigMap
