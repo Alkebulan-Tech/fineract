@@ -265,7 +265,7 @@ spec:
       serviceAccountName: nginx-ingress-controller
       containers:
         - name: nginx-ingress-controller
-          image: k8s.gcr.io/ingress-nginx/controller:v1.1.1
+          image: k8s.gcr.io/ingress-nginx/controller:v1.7.0
           command:
             - /nginx-ingress-controller
           env:
