@@ -34,10 +34,10 @@ fineract:
       kubernetes.io/ingress.class: gce
 #      ingressClassName: "nginx"
       # This enables HTTP connections from Internet clients
-      kubernetes.io/ingress.allow-http: "true"
+      kubernetes.io/ingress.allow-http: true
       # This tells Google Cloud to associate the External Load Balancer with the static IP which we created earlier
-      kubernetes.io/ingress.global-static-ip-name: "kemetstack-static-ip"
-      networking.gke.io/managed-certificates: "kemetstack-managed-cert"
+      kubernetes.io/ingress.global-static-ip-name: kemetstack-static-ip
+      #networking.gke.io/managed-certificates: kemetstack-managed-cert
   resources:
     limits:
       cpu: "2000m"
