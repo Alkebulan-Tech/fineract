@@ -32,7 +32,7 @@ spec:
     app: fineract-server
     tier: backend
   type: LoadBalancer
-  loadBalancerIP: kemetstack-static-ip
+  loadBalancerIP: 34.45.178.100
 
 ---
 
