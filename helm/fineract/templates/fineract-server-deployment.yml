@@ -269,7 +269,7 @@ spec:
           image: k8s.gcr.io/ingress-nginx/controller:v1.7.0
           args:
             - /nginx-ingress-controller
-            - --configmap=default/nginx-ingress-controller
+            - --configmap=kube-system/nginx-ingress-controller
           env:
             - name: POD_NAME
               valueFrom:
