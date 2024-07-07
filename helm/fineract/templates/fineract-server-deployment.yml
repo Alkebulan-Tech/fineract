@@ -184,7 +184,7 @@ metadata:
 {{ toYaml .Values.fineract.ingress.annotations | indent 4 }}
 {{- end }}
 spec:
-  kubernetes.io/ingress.class: nginx
+  kubernetes.io/ingress.class: gce
   rules:
     - host: "{{ .Values.fineract.ingress.hostname }}"
       http:
