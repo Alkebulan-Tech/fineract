@@ -31,7 +31,8 @@ spec:
   selector:
     app: fineract-server
     tier: backend
-  type: ClusterIP
+  type: LoadBalancer
+  loadBalancerIP: kemetstack-static-ip
 
 ---
 
