@@ -272,6 +272,8 @@ spec:
             - --default-backend-service=paymenthub-back-end/fineract-server
             - --configmap=kube-system/nginx-ingress-controller
             - --annotations-prefix=ingress.kubernetes.io
+            - --controller-class=gce
+            - --ingress-class=gce
           env:
             - name: POD_NAME
               valueFrom:
