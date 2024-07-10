@@ -54,7 +54,7 @@ fineract:
 
 webapp:
   enabled: true
-  lookforservice: true
+#  lookforservice: true
   image: "almbolonzi/web-app:1.0.0"
   ingress:
     enabled: false
