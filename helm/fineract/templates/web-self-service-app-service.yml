@@ -1,0 +1,42 @@
+{{- if .Values.selfservice.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: self-service
+spec:
+  ports:
+  - protocol: TCP
+    port: 8082
+    targetPort: 80
+  selector:
+    app: self-service
+  type: ClusterIP
+
+---
+{{- if .Values.selfservice.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: self-service-ingress
+  annotations:
+{{- if .Values.selfservice.ingress.annotations }}
+{{ toYaml .Values.selfservice.ingress.annotations | indent 4 }}
+{{- end }}
+spec:
+  rules:
+    - host: "{{ .Values.selfservice.ingress.hostname }}"
+      http:
+        paths:
+          - path: "{{ .Values.selfservice.ingress.path }}"
+            pathType: Prefix
+            backend:
+              service:
+                name: self-service
+                port: 
+                  number: 8082
+  #tls:
+   # - hosts:
+    #    - "{{ .Values.wildcardhostname }}"
+    #  secretName: "{{ .Values.tls }}"
+{{- end }}
+{{- end }}
