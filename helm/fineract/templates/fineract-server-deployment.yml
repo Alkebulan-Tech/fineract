@@ -31,9 +31,8 @@ spec:
   selector:
     app: fineract-server
     tier: backend
-  type: LoadBalancer
-  loadBalancerIP: 34.45.178.100
-
+  type: ClusterIP
+#  loadBalancerIP: 34.45.178.100
 ---
 
 apiVersion: apps/v1
