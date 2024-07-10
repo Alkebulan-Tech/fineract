@@ -206,7 +206,7 @@ spec:
               service:
                 name: web-app
                 port: 
-                  number: 8081
+                  number: 80
     - host: "{{ .Values.selfservice.ingress.hostname }}"
       http:
         paths:
