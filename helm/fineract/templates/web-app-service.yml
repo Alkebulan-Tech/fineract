@@ -6,7 +6,7 @@ metadata:
 spec:
   ports:
   - protocol: TCP
-    port: 8081
+    port: 80
     targetPort: 80
   selector:
     app: web-app
@@ -34,7 +34,7 @@ spec:
               service:
                 name: web-app
                 port: 
-                  number: 8081
+                  number: 80
   #tls:
     #- hosts:
     #    - "{{ .Values.wildcardhostname }}"
