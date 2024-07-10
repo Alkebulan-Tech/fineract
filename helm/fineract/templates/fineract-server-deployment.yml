@@ -248,40 +248,40 @@ data:
     GRANT ALL PRIVILEGES ON `fineract_tenants`.* TO 'mifos';
     GRANT ALL PRIVILEGES ON `fineract_default`.* TO 'mifos';
 
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: nginx-ingress-controller
-  namespace: kube-system
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: nginx-ingress
-  template:
-    metadata:
-      labels:
-        app: nginx-ingress
-    spec:
-      serviceAccountName: nginx-ingress-controller
-      containers:
-        - name: nginx-ingress-controller
-          image: k8s.gcr.io/ingress-nginx/controller:v1.7.0
-          args:
-            - /nginx-ingress-controller
-            - --default-backend-service=paymenthub-back-end/fineract-server
-            - --configmap=kube-system/nginx-ingress-controller
-            - --annotations-prefix=ingress.kubernetes.io
-            - --controller-class=gce
-            - --ingress-class=gce
-          env:
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
+#---
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: nginx-ingress-controller
+#  namespace: kube-system
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: nginx-ingress
+#  template:
+#    metadata:
+#      labels:
+#        app: nginx-ingress
+#    spec:
+#      serviceAccountName: nginx-ingress-controller
+#      containers:
+#        - name: nginx-ingress-controller
+#          image: k8s.gcr.io/ingress-nginx/controller:v1.7.0
+#          args:
+#            - /nginx-ingress-controller
+#            - --default-backend-service=paymenthub-back-end/fineract-server
+#            - --configmap=kube-system/nginx-ingress-controller
+#            - --annotations-prefix=ingress.kubernetes.io
+#            - --controller-class=gce
+#            - --ingress-class=gce
+#          env:
+#            - name: POD_NAME
+#              valueFrom:
+#                fieldRef:
+#                  fieldPath: metadata.name
+#            - name: POD_NAMESPACE
+#              valueFrom:
+#                fieldRef:
+#                  fieldPath: metadata.namespace
 {{- end }}
