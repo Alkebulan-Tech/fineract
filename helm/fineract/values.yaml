@@ -37,7 +37,7 @@ fineract:
       kubernetes.io/ingress.allow-http: "false"
       # This tells Google Cloud to associate the External Load Balancer with the static IP which we created earlier
 #      kubernetes.io/ingress.global-static-ip-name: kemetstack-static-ip
-      networking.gke.io/managed-certificates: kemetstack-managed-cert
+      networking.gke.io/managed-certificates: kemetstax-managed-cert
   resources:
     limits:
       cpu: "2000m"
