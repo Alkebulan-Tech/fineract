@@ -283,19 +283,19 @@ data:
 #              valueFrom:
 #                fieldRef:
 #                  fieldPath: metadata.namespace
-#---
-#apiVersion: networking.gke.io/v1
-#kind: ManagedCertificate
-#metadata:
-#  name: kemetstax-managed-cert
-#spec:
-#  domains:
-#    - kemetstax.org
-#    - kemetx.kemetstax.org
-#    - web.kemetstax.org
-#    - api.kemetstax.org
-#    - self.kemetstax.org
-#    - qa.kemetstax.org
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: kemetstax-managed-cert
+spec:
+  domains:
+    - kemetstax.org
+    - kemetx.kemetstax.org
+    - web.kemetstax.org
+    - api.kemetstax.org
+    - self.kemetstax.org
+    - qa.kemetstax.org
 ---
 
 apiVersion: compute.cnrm.cloud.google.com/v1beta1
