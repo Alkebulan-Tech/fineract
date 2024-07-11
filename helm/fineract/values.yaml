@@ -43,7 +43,7 @@ fineract:
       cpu: "2000m"
       memory: "4Gi"
     requests:
-      cpu: "500m"
+      cpu: "1000m"
       memory: "1Gi"
   deployment:
     extraEnvs:
