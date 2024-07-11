@@ -37,7 +37,7 @@ fineract:
       kubernetes.io/ingress.class: "gce"
 #      ingressClassName: "nginx"
       # This enables HTTP connections from Internet clients
-      kubernetes.io/ingress.allow-http: "false"
+      #kubernetes.io/ingress.allow-http: "false"
   resources:
     limits:
       cpu: "2000m"
