@@ -34,8 +34,8 @@ fineract:
       # kubernetes.io/ingress.class: "nginx"
       # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       # This tells Google Cloud to create an External Load Balancer to realize this Ingress
-      kubernetes.io/ingress.class: "gce"
-#      ingressClassName: "nginx"
+#      kubernetes.io/ingress.class: "gce"
+      ingressClassName: "gce"
       # This enables HTTP connections from Internet clients
       #kubernetes.io/ingress.allow-http: "false"
   resources:
