@@ -151,14 +151,14 @@ spec:
             # The proxy's memory use scales linearly with the number of active
             # connections. Fewer open connections will use less memory. Adjust
             # this value based on your application's requirements.
-            memory: "500Mi"
+            memory: "100Mi"
             # The proxy's CPU use scales linearly with the amount of IO between
             # the database and the application. Adjust this value based on your
             # application's requirements.
-            cpu:    "500m"
+            cpu:    "200m"
           limits:
-            memory: "1000Mi"
-            cpu: "1"
+            memory: "500Mi"
+            cpu: "500m"
         volumeMounts:
           - name: cloudsql-instance-credentials
             mountPath: /secrets/cloudsql

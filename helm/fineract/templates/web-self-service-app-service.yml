@@ -33,7 +33,7 @@ spec:
               service:
                 name: self-service
                 port: 
-                  number: 8082
+                  number: 80
   #tls:
    # - hosts:
     #    - "{{ .Values.wildcardhostname }}"
