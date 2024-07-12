@@ -37,7 +37,7 @@ fineract:
       kubernetes.io/ingress.class: "nginx"
 #      ingressClassName: "gce"
       # This enables HTTP connections from Internet clients
-      #kubernetes.io/ingress.allow-http: "false"
+      kubernetes.io/ingress.allow-http: "false"
   resources:
     limits:
       cpu: "2000m"
@@ -64,6 +64,8 @@ webapp:
       kubernetes.io/ingress.global-static-ip-name: kemetstax-static-ip
       networking.gke.io/managed-certificates: kemetstax-managed-cert
       kubernetes.io/ingress.class: "nginx"
+      # This enables HTTP connections from Internet clients
+      kubernetes.io/ingress.allow-http: "false"
 #      ingressClassName: "gce"
   resources:
     limits:
@@ -84,6 +86,8 @@ selfservice:
       kubernetes.io/ingress.global-static-ip-name: kemetstax-static-ip
       networking.gke.io/managed-certificates: kemetstax-managed-cert
       kubernetes.io/ingress.class: "nginx"
+      # This enables HTTP connections from Internet clients
+      kubernetes.io/ingress.allow-http: "false"
 
 # mysql:
 #   fullnameOverride: fineract-mysql
