@@ -53,7 +53,7 @@ fineract:
 webapp:
   enabled: true
 #  lookforservice: true
-  image: "almbolonzi/web-app:1.0.0"
+  image: "almbolonzi/web-app:sha-c370888"
   ingress:
     enabled: true
     hostname: "web.kemetstax.org"
