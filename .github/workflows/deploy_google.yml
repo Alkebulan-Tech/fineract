@@ -118,15 +118,15 @@ jobs:
         helm repo add kong https://charts.konghq.com
         helm repo add keycloak https://codecentric.github.io/helm-charts
         helm repo add redis https://charts.bitnami.com/bitnami
-        helm repo add jetstack https://charts.jetstack.io
+        #helm repo add jetstack https://charts.jetstack.io
         
         
         helm repo update
         
-        helm upgrade cert-manager jetstack/cert-manager --namespace cert-manager \
-        --create-namespace \
-        --version v1.15.1 \
-        --set crds.enabled=true
+        #helm upgrade cert-manager jetstack/cert-manager --namespace cert-manager \
+        #--create-namespace \
+        #--version v1.15.1 \
+        #--set crds.enabled=true
   
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
         --install --namespace paymenthub-back-end \
