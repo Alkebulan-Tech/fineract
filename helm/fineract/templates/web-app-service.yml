@@ -11,7 +11,7 @@ spec:
   selector:
     app: web-app
     tier: frontend
-  type: NodePort
+  type: ClusterIP
 
 ---
 {{- if .Values.webapp.ingress.enabled }}
