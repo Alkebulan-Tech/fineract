@@ -35,7 +35,7 @@ fineract:
       # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       # This tells Google Cloud to create an External Load Balancer to realize this Ingress
 #      kubernetes.io/ingress.class: "gce"
-      ingressClassName: "gce"
+#      ingressClassName: "gce"
       # This enables HTTP connections from Internet clients
       #kubernetes.io/ingress.allow-http: "false"
   resources:
@@ -62,8 +62,8 @@ webapp:
     path: "/"
     annotations:
       kubernetes.io/ingress.global-static-ip-name: kemetstax-static-ip
-      networking.gke.io/managed-certificates: kemetstax-managed-cert
-      kubernetes.io/ingress.class: "gce"
+#      networking.gke.io/managed-certificates: kemetstax-managed-cert
+#      kubernetes.io/ingress.class: "gce"
 #      ingressClassName: "gce"
   resources:
     limits:
@@ -82,8 +82,8 @@ selfservice:
     path: "/"
     annotations:
       kubernetes.io/ingress.global-static-ip-name: kemetstax-static-ip
-      networking.gke.io/managed-certificates: kemetstax-managed-cert
-      kubernetes.io/ingress.class: "gce"
+#      networking.gke.io/managed-certificates: kemetstax-managed-cert
+#      kubernetes.io/ingress.class: "gce"
 
 # mysql:
 #   fullnameOverride: fineract-mysql

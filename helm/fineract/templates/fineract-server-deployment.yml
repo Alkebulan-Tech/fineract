@@ -308,14 +308,14 @@ data:
 #    - api.kemetstax.org
 #    - self.kemetstax.org
 #    - qa.kemetstax.org
----
-
-apiVersion: compute.cnrm.cloud.google.com/v1beta1
-kind: ComputeAddress
-metadata:
-  name: kemetstax-static-ip
-  namespace: paymenthub-back-end
-spec:
-  location: global
+#---
+#
+#apiVersion: compute.cnrm.cloud.google.com/v1beta1
+#kind: ComputeAddress
+#metadata:
+#  name: kemetstax-static-ip
+#  namespace: paymenthub-back-end
+#spec:
+#  location: global
 
 {{- end }}
