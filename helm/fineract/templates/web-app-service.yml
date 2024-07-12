@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: web-app
   annotations:
-    cloud.google.com/neg: '{"exposed_ports": {"80":{"name": "ingress-nginx-80-neg"}}}'
+    cloud.google.com/neg: '{"exposed_ports": {"80":{"name": "web-app-80-neg"}}}'
 spec:
   ports:
   - protocol: TCP
