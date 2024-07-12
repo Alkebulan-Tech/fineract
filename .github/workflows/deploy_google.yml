@@ -118,9 +118,13 @@ jobs:
         helm repo add kong https://charts.konghq.com
         helm repo add keycloak https://codecentric.github.io/helm-charts
         helm repo add redis https://charts.bitnami.com/bitnami
+        helm repo add cert-manager https://charts.cert-manager.io
+        
         
         helm repo update
         
+        helm install cert-manager cert-manager/cert-manager --namespace paymenthub-back-end  # This namespace is recommended by cert-manager
+  
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
         --install --namespace paymenthub-back-end \
         --set fineract.image=${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA} \

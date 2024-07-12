@@ -72,13 +72,13 @@ spec:
             memory: "{{ .Values.fineract.resources.requests.memory }}"
         livenessProbe:
           httpGet:
-            path: "/actuator/health/liveness"
+            path: "/actuator/health"
             port: 80
           initialDelaySeconds: 90
           periodSeconds: 30
         readinessProbe:
           httpGet:
-            path: "/actuator/health/readiness"
+            path: "/actuator/health"
             port: 80
           initialDelaySeconds: 90
           periodSeconds: 30
@@ -308,14 +308,14 @@ data:
 #    - api.kemetstax.org
 #    - self.kemetstax.org
 #    - qa.kemetstax.org
----
-
-apiVersion: compute.cnrm.cloud.google.com/v1beta1
-kind: ComputeAddress
-metadata:
-  name: kemetstax-static-ip
-  namespace: paymenthub-back-end
-spec:
-  location: global
+#---
+#
+#apiVersion: compute.cnrm.cloud.google.com/v1beta1
+#kind: ComputeAddress
+#metadata:
+#  name: kemetstax-static-ip
+#  namespace: paymenthub-back-end
+#spec:
+#  location: global
 
 {{- end }}
