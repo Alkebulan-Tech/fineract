@@ -13,8 +13,7 @@ spec:
   selector:
     app: web-app
     tier: frontend
-  type: LoadBalancer
-  loadBalancerIP: 34.173.147.33
+  type: ClusterIP
 
 ---
 {{- if .Values.webapp.ingress.enabled }}
