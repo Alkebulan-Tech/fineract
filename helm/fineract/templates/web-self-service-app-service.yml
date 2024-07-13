@@ -12,7 +12,8 @@ spec:
     targetPort: 80
   selector:
     app: self-service
-  type: ClusterIP
+  type: LoadBalancer
+  loadBalancerIP: 34.173.147.33
 
 ---
 {{- if .Values.selfservice.ingress.enabled }}
