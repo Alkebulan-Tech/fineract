@@ -23,8 +23,8 @@ metadata:
   labels:
     app: fineract-server
   name: fineract-server
-  annotations:
-    cloud.google.com/neg: '{"exposed_ports": {"80":{"name": "fineract-server-80-neg"}}}'
+#  annotations:
+#    cloud.google.com/neg: '{"exposed_ports": {"80":{"name": "fineract-server-80-neg"}}}'
 spec:
   ports:
   - protocol: TCP
