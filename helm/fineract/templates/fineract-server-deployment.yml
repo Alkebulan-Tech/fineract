@@ -284,20 +284,23 @@ data:
 #              valueFrom:
 #                fieldRef:
 #                  fieldPath: metadata.namespace
-#---
-#apiVersion: networking.gke.io/v1
-#kind: ManagedCertificate
-#metadata:
-#  name: kemetstax-managed-cert
-#spec:
-#  domains:
-#    - kemetstax.org
-#    - kemetx.kemetstax.org
-#    - web.kemetstax.org
-#    - api.kemetstax.org
-#    - self.kemetstax.org
-#    - qa.kemetstax.org
-#---
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: kemetstax-ssl-cert
+  namespace: paymenthub-back-end
+spec:
+  domains:
+    - api.kemetstax.org
+    - dev.kemetstax.org
+    - kemetstax.org
+    - kemetx.kemetstax.org
+    - qa.kemetstax.org
+    - test.kemetstax.org
+    - web.kemetstax.org
+
+---
 #
 #apiVersion: compute.cnrm.cloud.google.com/v1beta1
 #kind: ComputeAddress
