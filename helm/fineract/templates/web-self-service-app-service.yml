@@ -13,7 +13,7 @@ spec:
   selector:
     app: self-service
     tier: frontend
-  type: ClusterIP
+  type: NodePort
 
 ---
 {{- if .Values.selfservice.ingress.enabled }}
