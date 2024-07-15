@@ -56,7 +56,7 @@ webapp:
 #  lookforservice: true
   image: "almbolonzi/web-app:sha-c370888"
   ingress:
-    enabled: true
+    enabled: false
     hostname: "web.kemetstax.org"
     path: "/"
     annotations:
@@ -78,7 +78,7 @@ selfservice:
   enabled: true
   image: "almbolonzi/web-self-service-app:1.0.0"
   ingress:
-    enabled: true
+    enabled: false
     hostname: "self.kemetstax.org"
     path: "/"
     annotations:
