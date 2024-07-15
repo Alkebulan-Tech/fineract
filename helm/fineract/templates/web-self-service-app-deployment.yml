@@ -42,7 +42,7 @@ spec:
         imagePullPolicy: Always
         name: self-service
         ports:
-        - containerPort: 443
+        - containerPort: 80
           name: self-service
         #resources: {}
       restartPolicy: Always
