@@ -30,7 +30,7 @@ fineract:
     annotations:
       # This tells Google Cloud to associate the External Load Balancer with the static IP which we created earlier
       kubernetes.io/ingress.global-static-ip-name: kemetstax-static-ip
-      networking.gke.io/managed-certificates: kemetstax-ssl-cert
+#      networking.gke.io/managed-certificates: kemetstax-ssl-cert
       # kubernetes.io/ingress.class: "nginx"
       # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       # This tells Google Cloud to create an External Load Balancer to realize this Ingress
@@ -61,7 +61,7 @@ webapp:
     path: "/"
     annotations:
       kubernetes.io/ingress.global-static-ip-name: kemetstax-static-ip
-      networking.gke.io/managed-certificates: kemetstax-ssl-cert
+#      networking.gke.io/managed-certificates: kemetstax-ssl-cert
       kubernetes.io/ingress.class: "gce"
       #nginx.org/redirect-to-https: "true"
 #      ingressClassName: "gce"
@@ -83,7 +83,7 @@ selfservice:
     path: "/"
     annotations:
       kubernetes.io/ingress.global-static-ip-name: kemetstax-static-ip
-      networking.gke.io/managed-certificates: kemetstax-ssl-cert
+#      networking.gke.io/managed-certificates: kemetstax-ssl-cert
       kubernetes.io/ingress.class: "gce"
       #nginx.org/redirect-to-https: "true"
       kubernetes.io/ingress.allow-http: "false"
