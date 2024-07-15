@@ -33,7 +33,7 @@ spec:
   selector:
     app: fineract-server
     tier: backend
-  type: NodePort
+  type: ClusterIP
 #  loadBalancerIP: 34.45.178.100
 ---
 
