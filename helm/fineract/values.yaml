@@ -39,11 +39,11 @@ fineract:
       kubernetes.io/ingress.allow-http: "false"
   resources:
     limits:
-      cpu: "2500m"
-      memory: "8Gi"
+      cpu: "500m"
+      memory: "512Mi"
     requests:
-      cpu: "1500m"
-      memory: "2Gi"
+      cpu: "250m"
+      memory: "256Mi"
   deployment:
     extraEnvs:
       - name: "FINERACT_SECURITY_BASICAUTH_ENABLED"
