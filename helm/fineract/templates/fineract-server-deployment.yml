@@ -206,30 +206,6 @@ spec:
                 name: fineract-server
                 port: 
                   number: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
-#    - host: "{{ .Values.webapp.ingress.hostname }}"
-#      http:
-#        paths:
-#          - path: "{{ .Values.webapp.ingress.path }}"
-#            pathType: Prefix
-#            backend:
-#              service:
-#                name: web-app
-#                port:
-#                  number: 80
-#    - host: "{{ .Values.selfservice.ingress.hostname }}"
-#      http:
-#        paths:
-#          - path: "{{ .Values.selfservice.ingress.path }}"
-#            pathType: Prefix
-#            backend:
-#              service:
-#                name: self-service
-#                port:
-#                  number: 80
-  #tls:
-  #  - hosts:
-  #      - "{{ .Values.fineract.ingress.wildcardhostname }}"
-  #    secretName: "{{ .Values.tls }}"
 {{- end }}
 ---
 apiVersion: v1
@@ -256,43 +232,6 @@ data:
     GRANT ALL ON *.* TO 'root'@'%';
     GRANT ALL PRIVILEGES ON `fineract_tenants`.* TO 'mifos';
     GRANT ALL PRIVILEGES ON `fineract_default`.* TO 'mifos';
-
-#---
-#apiVersion: apps/v1
-#kind: Deployment
-#metadata:
-#  name: nginx-ingress-controller
-#  namespace: kube-system
-#spec:
-#  replicas: 1
-#  selector:
-#    matchLabels:
-#      app: nginx-ingress
-#  template:
-#    metadata:
-#      labels:
-#        app: nginx-ingress
-#    spec:
-#      serviceAccountName: nginx-ingress-controller
-#      containers:
-#        - name: nginx-ingress-controller
-#          image: k8s.gcr.io/ingress-nginx/controller:v1.7.0
-#          args:
-#            - /nginx-ingress-controller
-#            - --default-backend-service=paymenthub-back-end/fineract-server
-#            - --configmap=kube-system/nginx-ingress-controller
-#            - --annotations-prefix=ingress.kubernetes.io
-#            - --controller-class=gce
-#            - --ingress-class=gce
-#          env:
-#            - name: POD_NAME
-#              valueFrom:
-#                fieldRef:
-#                  fieldPath: metadata.name
-#            - name: POD_NAMESPACE
-#              valueFrom:
-#                fieldRef:
-#                  fieldPath: metadata.namespace
 ---
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
@@ -308,15 +247,5 @@ spec:
     - qa.kemetstax.org
     - test.kemetstax.org
     - web.kemetstax.org
-
-#---
-#
-#apiVersion: compute.cnrm.cloud.google.com/v1beta1
-#kind: ComputeAddress
-#metadata:
-#  name: kemetstax-static-ip
-#  namespace: paymenthub-back-end
-#spec:
-#  location: global
 
 {{- end }}
