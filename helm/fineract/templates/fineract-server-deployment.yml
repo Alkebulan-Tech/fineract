@@ -37,7 +37,6 @@ spec:
   type: ClusterIP
 #  loadBalancerIP: 34.45.178.100
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -105,9 +104,9 @@ spec:
           - name: FINERACT_DEFAULT_TENANTDB_PORT
             value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"
           - name: FINERACT_DEFAULT_TENANTDB_IDENTIFIER
-            value:  "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}" 
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER }}"
           - name: FINERACT_DEFAULT_TENANTDB_NAME
-            value:   "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME}}"
+            value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME }}"
           - name: FINERACT_DEFAULT_TENANTDB_UID
             valueFrom:
               secretKeyRef:
@@ -128,12 +127,10 @@ spec:
           - containerPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
             name: fineract-server
         lifecycle:
-            preStop:
-              exec:
-                command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
-                
-      # [START cloud_sql_proxy_k8s_container]
-        - name: cloud-sql-proxy
+          preStop:
+            exec:
+              command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
+      - name: cloud-sql-proxy
         # It is recommended to use the latest version of the Cloud SQL Auth Proxy
         # Make sure to update on a regular schedule!
         image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4
@@ -184,7 +181,8 @@ spec:
         - name: mysql-initdb
           configMap:
             name: mysql-preload-data-config
-            # [END cloud_sql_proxy_k8s_container]
+# [END cloud_sql_proxy_k8s_container]
+
 ---
 {{- if .Values.fineract.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
