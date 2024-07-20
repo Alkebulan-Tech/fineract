@@ -19,10 +19,10 @@ on:
 env:
   PROJECT_ID: ${{ secrets.KEMETX_GKE_PROJECT }}
   GAR_LOCATION: us-central1 # TODO: update region of the Artifact Registry
-  GKE_CLUSTER: fineract-cluster    # TODO: update to cluster name
+  GKE_CLUSTER: fineract-cluster-d06d1de9    # TODO: update to cluster name
   GKE_ZONE: us-central1   # TODO: update to cluster zone
   DEPLOYMENT_NAME: kemetx-gke-test # TODO: update to deployment name
-  REPOSITORY: kemetx-fineract # TODO: update to Artifact Registry docker repository
+  REPOSITORY: kemetx-fineract-d06d1de9 # TODO: update to Artifact Registry docker repository
   IMAGE: alekbulan-fineract
 
 jobs:
@@ -122,14 +122,9 @@ jobs:
         
         
         helm repo update
-        
-        #helm upgrade cert-manager jetstack/cert-manager --namespace cert-manager \
-        #--create-namespace \
-        #--version v1.15.1 \
-        #--set crds.enabled=true
   
         helm upgrade -f helm/fineract/values.yaml ph-ee-backend helm/fineract/ \
-        --install --namespace paymenthub-back-end \
+        --install --namespace paymenthub-back-end-d06d1de9 \
         --set fineract.image=${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA} \
         --set fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_IDENTIFIER=${FINERACT_DEFAULT_TENANTDB_IDENTIFIER_TEST} \
         --set fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_NAME=${FINERACT_DEFAULT_TENANTDB_NAME_TEST} \

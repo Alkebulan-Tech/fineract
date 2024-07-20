@@ -23,13 +23,14 @@ metadata:
   labels:
     app: fineract-server
   name: fineract-server
-#  annotations:
-#    cloud.google.com/neg: '{"exposed_ports": {"80":{"name": "fineract-server-80-neg"}}}'
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
 spec:
   ports:
-  - protocol: TCP
-    port: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
-    targetPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
+    - name: 8080-8080
+      protocol: TCP
+      port: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
+      targetPort: {{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}
   selector:
     app: fineract-server
     tier: backend
@@ -57,10 +58,6 @@ spec:
         tier: backend
     spec:
       serviceAccountName: cloudsql-ksa
-#      initContainers:
-#        - name: init-mydb
-#          image: busybox:1.28
-#          command: ['sh', '-c', 'echo -e "Checking for the availability of MYSQL server deployment"; while ! nc -z "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_HOSTNAME }}" "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_DEFAULT_TENANTDB_PORT }}"; do sleep 1; printf "-"; done; echo -e " >> MYSQL server has started";']
       containers: 
       - name: fineract-server
         image: "{{ .Values.fineract.image }}"
@@ -72,6 +69,18 @@ spec:
           requests:
             cpu: "{{ .Values.fineract.resources.requests.cpu }}"
             memory: "{{ .Values.fineract.resources.requests.memory }}"
+        livenessProbe:
+          httpGet:
+            path: /fineract-provider/actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 180
+          periodSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /fineract-provider/actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 180
+          periodSeconds: 1
         env:
           - name: FINERACT_SERVER_PORT
             value: "{{ .Values.fineract.spec.template.spec.containers.env.FINERACT_SERVER_PORT }}"
@@ -123,7 +132,7 @@ spec:
                 command: ['sh', '-c', '{{ .Values.fineract.preStopScript}}']
                 
       # [START cloud_sql_proxy_k8s_container]
-      - name: cloud-sql-proxy
+        - name: cloud-sql-proxy
         # It is recommended to use the latest version of the Cloud SQL Auth Proxy
         # Make sure to update on a regular schedule!
         image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.4
@@ -137,7 +146,7 @@ spec:
 
           # Replace DB_PORT with the port the proxy should listen on
           - "--port=3306"
-          - "nodal-linker-425007-t9:us-central1:kemetx-instance"
+          - "nodal-linker-425007-t9:us-central1:kemetx-instance-d06d1de9"
         
         securityContext:
           # The default Cloud SQL Auth Proxy image runs as the
@@ -197,26 +206,26 @@ spec:
                 name: fineract-server
                 port: 
                   number: {{ .Values.fineract.spec.template.spec.containers.env.CONTAINER_PORT }}
-    - host: "{{ .Values.webapp.ingress.hostname }}"
-      http:
-        paths:
-          - path: "{{ .Values.webapp.ingress.path }}"
-            pathType: Prefix
-            backend:
-              service:
-                name: web-app
-                port:
-                  number: 80
-    - host: "{{ .Values.selfservice.ingress.hostname }}"
-      http:
-        paths:
-          - path: "{{ .Values.selfservice.ingress.path }}"
-            pathType: Prefix
-            backend:
-              service:
-                name: self-service
-                port:
-                  number: 80
+#    - host: "{{ .Values.webapp.ingress.hostname }}"
+#      http:
+#        paths:
+#          - path: "{{ .Values.webapp.ingress.path }}"
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: web-app
+#                port:
+#                  number: 80
+#    - host: "{{ .Values.selfservice.ingress.hostname }}"
+#      http:
+#        paths:
+#          - path: "{{ .Values.selfservice.ingress.path }}"
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: self-service
+#                port:
+#                  number: 80
   #tls:
   #  - hosts:
   #      - "{{ .Values.fineract.ingress.wildcardhostname }}"
@@ -288,8 +297,8 @@ data:
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
-  name: kemetstax-ssl-cert
-  namespace: paymenthub-back-end
+  name: kemetstax-ssl-cert-d06d1de9
+#  namespace: paymenthub-back-end
 spec:
   domains:
     - api.kemetstax.org
@@ -300,7 +309,7 @@ spec:
     - test.kemetstax.org
     - web.kemetstax.org
 
----
+#---
 #
 #apiVersion: compute.cnrm.cloud.google.com/v1beta1
 #kind: ComputeAddress
