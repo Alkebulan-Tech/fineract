@@ -25,7 +25,7 @@ fineract:
   ingress:
     enabled: true
     hostname: "kemetx.kemetstax.org"
-    path: "/"
+    path: "/*"
     #wildcardhostname: "*.kemetstax.org"
     annotations:
       # This tells Google Cloud to associate the External Load Balancer with the static IP which we created earlier
