@@ -30,7 +30,7 @@ fineract:
     annotations:
       # This tells Google Cloud to associate the External Load Balancer with the static IP which we created earlier
       kubernetes.io/ingress.global-static-ip-name: kemetstax-static-ip
-      networking.gke.io/managed-certificates: kemetstax-ssl-cert
+      networking.gke.io/managed-certificates: kemetstax-ssl-cert-d06d1de9
       # kubernetes.io/ingress.class: "nginx"
       # nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       # This tells Google Cloud to create an External Load Balancer to realize this Ingress
