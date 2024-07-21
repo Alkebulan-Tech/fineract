@@ -53,15 +53,21 @@
       </column>
     </addColumn>
   </changeSet>
-  <changeSet author="fineract" id="4" context="mysql">
-
-    <addForeignKeyConstraint baseColumnNames="loan_id"
-                             baseTableName="m_external_asset_owner_transfer"
-                             constraintName="FK_external_asset_owner_transfer_loan_id" deferrable="false"
-                             initiallyDeferred="false"
-                             onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
-                             referencedTableName="m_loan" validate="true"/>
-
+  <changeSet id="4" author="fineract">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <foreignKeyConstraintExists
+          foreignKeyName="FK_external_asset_owner_transfer_loan_id"
+          schemaName="fineract_default" />
+      </not>
+    </preConditions>
+    <addForeignKeyConstraint
+      baseTableName="m_external_asset_owner_transfer"
+      baseColumnNames="loan_id"
+      constraintName="FK_external_asset_owner_transfer_loan_id"
+      referencedTableName="m_loan"
+      referencedColumnNames="id"
+      onUpdate="RESTRICT"
+      onDelete="RESTRICT" />
   </changeSet>
-
 </databaseChangeLog>
