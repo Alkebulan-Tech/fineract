@@ -231,20 +231,20 @@ data:
     GRANT ALL ON *.* TO 'root'@'%';
     GRANT ALL PRIVILEGES ON `fineract_tenants`.* TO 'mifos';
     GRANT ALL PRIVILEGES ON `fineract_default`.* TO 'mifos';
----
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: kemetstax-ssl-cert-d06d1de9
-#  namespace: paymenthub-back-end
-spec:
-  domains:
-    - api.kemetstax.org
-    - dev.kemetstax.org
-    - kemetstax.org
-    - kemetx.kemetstax.org
-    - qa.kemetstax.org
-    - test.kemetstax.org
-    - web.kemetstax.org
+# ---
+# apiVersion: networking.gke.io/v1
+# kind: ManagedCertificate
+# metadata:
+#   name: kemetstax-ssl-cert-d06d1de9
+# #  namespace: paymenthub-back-end
+# spec:
+#   domains:
+#     - api.kemetstax.org
+#     - dev.kemetstax.org
+#     - kemetstax.org
+#     - kemetx.kemetstax.org
+#     - qa.kemetstax.org
+#     - test.kemetstax.org
+#     - web.kemetstax.org
 
 {{- end }}
