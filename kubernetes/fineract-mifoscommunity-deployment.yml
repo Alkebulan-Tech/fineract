@@ -60,7 +60,7 @@ spec:
           command: ['sh', '-c', 'echo -e "Checking for the availability of Fineract server deployment"; while ! nc -z "fineract-server" 8443; do sleep 1; printf "-"; done; echo -e " >> Fineract server has started";']
       containers:
       - name: mifos-community
-        image: openmf/community-app:latest
+        image: almbolonzi/mifos-community-app:latest
         resources:
           limits:
             cpu: "1000m"

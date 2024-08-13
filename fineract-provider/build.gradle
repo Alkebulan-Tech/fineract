@@ -264,8 +264,8 @@ jib {
     }
 
     to {
-        //image = 'almbolonzi/alekbulan-fineract'
-        image = "${System.getenv('GAR_LOCATION')}-docker.pkg.dev/${System.getenv('PROJECT_ID')}/${System.getenv('REPOSITORY')}/${System.getenv('IMAGE')}".toString()
+        image = 'almbolonzi/alekbulan-fineract'
+//        image = "${System.getenv('GAR_LOCATION')}-docker.pkg.dev/${System.getenv('PROJECT_ID')}/${System.getenv('REPOSITORY')}/${System.getenv('IMAGE')}".toString()
         tags = [
             "${project.version}",
             "${versionTag}",
@@ -289,8 +289,8 @@ jib {
         user = 'nobody:nogroup'
         environment = [
                 'GITHUB_SHA' : "${System.getenv('GITHUB_SHA')}".toString(),
-                'GITHUB_REF' : "${System.getenv('GITHUB_REF')}".toString(),
-                'GAR_LOCATION' : "${System.getenv('GAR_LOCATION')}".toString()
+                'GITHUB_REF' : "${System.getenv('GITHUB_REF')}".toString()
+//                'GAR_LOCATION' : "${System.getenv('GAR_LOCATION')}".toString()
         ]
     }
 

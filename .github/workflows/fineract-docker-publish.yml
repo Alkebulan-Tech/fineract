@@ -1,5 +1,8 @@
 name: JIB container publish
-on: [push, pull_request]
+
+on:
+ push:
+  branches: [ "kemetstack" ]
 
 jobs:
   build:
@@ -16,6 +19,9 @@ jobs:
           cache: gradle
       - name: Build the image
         run: ./gradlew --no-daemon --console=plain :fineract-provider:clean :fineract-provider:compileJava :fineract-provider:jibDockerBuild -x test -x cucumber
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
       - name: Docker login
         uses: docker/login-action@v2
         with:
