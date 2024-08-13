@@ -259,7 +259,7 @@ jib {
     def versionTag = 'git describe --tags --abbrev=0'.execute().text.trim()
 
     if (versionTag.startsWith('v')) {
-    // Remove 'v' prefix from version tag if present
+    //Remove 'v' prefix from version tag if present
         versionTag = versionTag.substring(1)
     }
 
