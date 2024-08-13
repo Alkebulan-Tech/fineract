@@ -33,13 +33,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.common.AccountingConstants.LoanProductAccountingParams;
-import org.apache.fineract.accounting.common.AccountingRuleType;
+import org.apache.fineract.accounting.common.AccountingValidations;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.infrastructure.core.data.ApiParameterError;
 import org.apache.fineract.infrastructure.core.data.DataValidatorBuilder;
+import org.apache.fineract.infrastructure.core.exception.GeneralPlatformDomainRuleException;
 import org.apache.fineract.infrastructure.core.exception.InvalidJsonException;
 import org.apache.fineract.infrastructure.core.exception.PlatformApiDataValidationException;
 import org.apache.fineract.infrastructure.core.serialization.FromJsonHelper;
@@ -61,11 +61,11 @@ import org.apache.fineract.portfolio.loanproduct.domain.LoanPreClosureInterestCa
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProduct;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductPaymentAllocationRule;
 import org.apache.fineract.portfolio.loanproduct.domain.LoanProductValueConditionType;
+import org.apache.fineract.portfolio.loanproduct.domain.LoanSupportedInterestRefundTypes;
 import org.apache.fineract.portfolio.loanproduct.domain.RecalculationFrequencyType;
 import org.apache.fineract.portfolio.loanproduct.exception.EqualAmortizationUnsupportedFeatureException;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @RequiredArgsConstructor
 @Component
 public final class LoanProductDataValidator {
@@ -91,6 +91,7 @@ public final class LoanProductDataValidator {
     public static final String IN_ARREARS_TOLERANCE = "inArrearsTolerance";
     public static final String TRANSACTION_PROCESSING_STRATEGY_CODE = "transactionProcessingStrategyCode";
     public static final String ADVANCED_PAYMENT_ALLOCATIONS = "paymentAllocation";
+    public static final String CREDIT_ALLOCATIONS = "creditAllocation";
     public static final String GRACE_ON_PRINCIPAL_PAYMENT = "graceOnPrincipalPayment";
     public static final String GRACE_ON_INTEREST_PAYMENT = "graceOnInterestPayment";
     public static final String GRACE_ON_INTEREST_CHARGED = "graceOnInterestCharged";
@@ -106,6 +107,8 @@ public final class LoanProductDataValidator {
     public static final String MAX_DIFFERENTIAL_LENDING_RATE = "maxDifferentialLendingRate";
     public static final String IS_FLOATING_INTEREST_RATE_CALCULATION_ALLOWED = "isFloatingInterestRateCalculationAllowed";
     public static final String ACCOUNTING_RULE = "accountingRule";
+    public static final String ENABLE_ACCRUAL_ACTIVITY_POSTING = "enableAccrualActivityPosting";
+
     /**
      * The parameters supported for this command.
      */
@@ -114,17 +117,18 @@ public final class LoanProductDataValidator {
             NUMBER_OF_REPAYMENTS, MIN_NUMBER_OF_REPAYMENTS, MAX_NUMBER_OF_REPAYMENTS, REPAYMENT_FREQUENCY_TYPE, INTEREST_RATE_PER_PERIOD,
             MIN_INTEREST_RATE_PER_PERIOD, MAX_INTEREST_RATE_PER_PERIOD, INTEREST_RATE_FREQUENCY_TYPE, AMORTIZATION_TYPE, INTEREST_TYPE,
             INTEREST_CALCULATION_PERIOD_TYPE, LoanProductConstants.ALLOW_PARTIAL_PERIOD_INTEREST_CALCUALTION_PARAM_NAME,
-            IN_ARREARS_TOLERANCE, TRANSACTION_PROCESSING_STRATEGY_CODE, ADVANCED_PAYMENT_ALLOCATIONS, GRACE_ON_PRINCIPAL_PAYMENT,
-            "recurringMoratoriumOnPrincipalPeriods", GRACE_ON_INTEREST_PAYMENT, GRACE_ON_INTEREST_CHARGED, "charges", ACCOUNTING_RULE,
-            INCLUDE_IN_BORROWER_CYCLE, "startDate", "closeDate", "externalId", IS_LINKED_TO_FLOATING_INTEREST_RATES, FLOATING_RATES_ID,
-            INTEREST_RATE_DIFFERENTIAL, MIN_DIFFERENTIAL_LENDING_RATE, DEFAULT_DIFFERENTIAL_LENDING_RATE, MAX_DIFFERENTIAL_LENDING_RATE,
-            IS_FLOATING_INTEREST_RATE_CALCULATION_ALLOWED, "syncExpectedWithDisbursementDate",
-            LoanProductAccountingParams.FEES_RECEIVABLE.getValue(), LoanProductAccountingParams.FUND_SOURCE.getValue(),
-            LoanProductAccountingParams.INCOME_FROM_FEES.getValue(), LoanProductAccountingParams.INCOME_FROM_PENALTIES.getValue(),
-            LoanProductAccountingParams.INTEREST_ON_LOANS.getValue(), LoanProductAccountingParams.INTEREST_RECEIVABLE.getValue(),
-            LoanProductAccountingParams.LOAN_PORTFOLIO.getValue(), LoanProductAccountingParams.OVERPAYMENT.getValue(),
-            LoanProductAccountingParams.TRANSFERS_SUSPENSE.getValue(), LoanProductAccountingParams.LOSSES_WRITTEN_OFF.getValue(),
-            LoanProductAccountingParams.GOODWILL_CREDIT.getValue(), LoanProductAccountingParams.PENALTIES_RECEIVABLE.getValue(),
+            IN_ARREARS_TOLERANCE, TRANSACTION_PROCESSING_STRATEGY_CODE, ADVANCED_PAYMENT_ALLOCATIONS, CREDIT_ALLOCATIONS,
+            GRACE_ON_PRINCIPAL_PAYMENT, "recurringMoratoriumOnPrincipalPeriods", GRACE_ON_INTEREST_PAYMENT, GRACE_ON_INTEREST_CHARGED,
+            "charges", ACCOUNTING_RULE, INCLUDE_IN_BORROWER_CYCLE, "startDate", "closeDate", "externalId",
+            IS_LINKED_TO_FLOATING_INTEREST_RATES, FLOATING_RATES_ID, INTEREST_RATE_DIFFERENTIAL, MIN_DIFFERENTIAL_LENDING_RATE,
+            DEFAULT_DIFFERENTIAL_LENDING_RATE, MAX_DIFFERENTIAL_LENDING_RATE, IS_FLOATING_INTEREST_RATE_CALCULATION_ALLOWED,
+            "syncExpectedWithDisbursementDate", LoanProductAccountingParams.FEES_RECEIVABLE.getValue(),
+            LoanProductAccountingParams.FUND_SOURCE.getValue(), LoanProductAccountingParams.INCOME_FROM_FEES.getValue(),
+            LoanProductAccountingParams.INCOME_FROM_PENALTIES.getValue(), LoanProductAccountingParams.INTEREST_ON_LOANS.getValue(),
+            LoanProductAccountingParams.INTEREST_RECEIVABLE.getValue(), LoanProductAccountingParams.LOAN_PORTFOLIO.getValue(),
+            LoanProductAccountingParams.OVERPAYMENT.getValue(), LoanProductAccountingParams.TRANSFERS_SUSPENSE.getValue(),
+            LoanProductAccountingParams.LOSSES_WRITTEN_OFF.getValue(), LoanProductAccountingParams.GOODWILL_CREDIT.getValue(),
+            LoanProductAccountingParams.PENALTIES_RECEIVABLE.getValue(),
             LoanProductAccountingParams.PAYMENT_CHANNEL_FUND_SOURCE_MAPPING.getValue(),
             LoanProductAccountingParams.FEE_INCOME_ACCOUNT_MAPPING.getValue(), LoanProductAccountingParams.INCOME_FROM_RECOVERY.getValue(),
             LoanProductAccountingParams.PENALTY_INCOME_ACCOUNT_MAPPING.getValue(),
@@ -170,8 +174,9 @@ public final class LoanProductDataValidator {
             LoanProductConstants.DUE_DAYS_FOR_REPAYMENT_EVENT, LoanProductConstants.OVER_DUE_DAYS_FOR_REPAYMENT_EVENT,
             LoanProductConstants.ENABLE_DOWN_PAYMENT, LoanProductConstants.DISBURSED_AMOUNT_PERCENTAGE_DOWN_PAYMENT,
             LoanProductConstants.ENABLE_AUTO_REPAYMENT_DOWN_PAYMENT, LoanProductConstants.REPAYMENT_START_DATE_TYPE,
-            LoanProductConstants.DISABLE_SCHEDULE_EXTENSION_FOR_DOWN_PAYMENT, LoanProductConstants.ENABLE_INSTALLMENT_LEVEL_DELINQUENCY,
-            LoanProductConstants.LOAN_SCHEDULE_TYPE, LoanProductConstants.LOAN_SCHEDULE_PROCESSING_TYPE));
+            LoanProductConstants.ENABLE_INSTALLMENT_LEVEL_DELINQUENCY, LoanProductConstants.LOAN_SCHEDULE_TYPE,
+            LoanProductConstants.LOAN_SCHEDULE_PROCESSING_TYPE, LoanProductConstants.FIXED_LENGTH,
+            LoanProductConstants.ENABLE_ACCRUAL_ACTIVITY_POSTING, LoanProductConstants.SUPPORTED_INTEREST_REFUND_TYPES));
 
     private static final String[] SUPPORTED_LOAN_CONFIGURABLE_ATTRIBUTES = { LoanProductConstants.amortizationTypeParamName,
             LoanProductConstants.interestTypeParamName, LoanProductConstants.transactionProcessingStrategyCodeParamName,
@@ -340,9 +345,9 @@ public final class LoanProductDataValidator {
         // Validating whether the processor is existing
         loanRepaymentScheduleTransactionProcessorFactory.determineProcessor(transactionProcessingStrategyCode);
 
+        Long delinquencyBucketId = null;
         if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.DELINQUENCY_BUCKET_PARAM_NAME, element)) {
-            final Long delinquencyBucketId = this.fromApiJsonHelper.extractLongNamed(LoanProductConstants.DELINQUENCY_BUCKET_PARAM_NAME,
-                    element);
+            delinquencyBucketId = this.fromApiJsonHelper.extractLongNamed(LoanProductConstants.DELINQUENCY_BUCKET_PARAM_NAME, element);
             baseDataValidator.reset().parameter(LoanProductConstants.DELINQUENCY_BUCKET_PARAM_NAME).value(delinquencyBucketId)
                     .ignoreIfNull().integerGreaterThanZero();
         }
@@ -399,6 +404,7 @@ public final class LoanProductDataValidator {
         }
 
         // interest rates
+        boolean isInterestBearing = false;
         if (this.fromApiJsonHelper.parameterExists(IS_LINKED_TO_FLOATING_INTEREST_RATES, element)
                 && this.fromApiJsonHelper.extractBooleanNamed(IS_LINKED_TO_FLOATING_INTEREST_RATES, element)) {
             if (isEqualAmortization) {
@@ -482,6 +488,7 @@ public final class LoanProductDataValidator {
                     .extractBooleanNamed(IS_FLOATING_INTEREST_RATE_CALCULATION_ALLOWED, element);
             baseDataValidator.reset().parameter(IS_FLOATING_INTEREST_RATE_CALCULATION_ALLOWED)
                     .value(isFloatingInterestRateCalculationAllowed).notNull().isOneOfTheseValues(true, false);
+            isInterestBearing = true;
         } else {
             if (this.fromApiJsonHelper.parameterExists(FLOATING_RATES_ID, element)) {
                 baseDataValidator.reset().parameter(FLOATING_RATES_ID).failWithCode(
@@ -519,8 +526,7 @@ public final class LoanProductDataValidator {
                         "isFloatingInterestRateCalculationAllowed param is not supported when isLinkedToFloatingInterestRates is not supplied or false");
             }
 
-            final BigDecimal interestRatePerPeriod = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(INTEREST_RATE_PER_PERIOD,
-                    element);
+            BigDecimal interestRatePerPeriod = this.fromApiJsonHelper.extractBigDecimalWithLocaleNamed(INTEREST_RATE_PER_PERIOD, element);
             baseDataValidator.reset().parameter(INTEREST_RATE_PER_PERIOD).value(interestRatePerPeriod).notNull().zeroOrPositiveAmount();
 
             final String minInterestRatePerPeriodParameterName = MIN_INTEREST_RATE_PER_PERIOD;
@@ -562,7 +568,13 @@ public final class LoanProductDataValidator {
                     Locale.getDefault());
             baseDataValidator.reset().parameter(INTEREST_RATE_FREQUENCY_TYPE).value(interestRateFrequencyType).notNull().inMinMaxRange(0,
                     4);
+            isInterestBearing = interestRatePerPeriod.compareTo(BigDecimal.ZERO) > 0;
         }
+
+        // Fixed Length validation
+
+        fixedLengthValidations(transactionProcessingStrategyCode, isInterestBearing, numberOfRepayments, repaymentEvery, element,
+                baseDataValidator);
 
         // Guarantee Funds
         Boolean holdGuaranteeFunds = false;
@@ -611,7 +623,8 @@ public final class LoanProductDataValidator {
         final Integer accountingRuleType = this.fromApiJsonHelper.extractIntegerNamed(ACCOUNTING_RULE, element, Locale.getDefault());
         baseDataValidator.reset().parameter(ACCOUNTING_RULE).value(accountingRuleType).notNull().inMinMaxRange(1, 4);
 
-        if (isCashBasedAccounting(accountingRuleType) || isAccrualBasedAccounting(accountingRuleType)) {
+        if (AccountingValidations.isCashBasedAccounting(accountingRuleType)
+                || AccountingValidations.isAccrualBasedAccounting(accountingRuleType)) {
 
             final Long fundAccountId = this.fromApiJsonHelper.extractLongNamed(LoanProductAccountingParams.FUND_SOURCE.getValue(), element);
             baseDataValidator.reset().parameter(LoanProductAccountingParams.FUND_SOURCE.getValue()).value(fundAccountId).notNull()
@@ -707,7 +720,7 @@ public final class LoanProductDataValidator {
 
         }
 
-        if (isAccrualBasedAccounting(accountingRuleType)) {
+        if (AccountingValidations.isAccrualBasedAccounting(accountingRuleType)) {
 
             final Long receivableInterestAccountId = this.fromApiJsonHelper
                     .extractLongNamed(LoanProductAccountingParams.INTEREST_RECEIVABLE.getValue(), element);
@@ -723,6 +736,18 @@ public final class LoanProductDataValidator {
                     .extractLongNamed(LoanProductAccountingParams.PENALTIES_RECEIVABLE.getValue(), element);
             baseDataValidator.reset().parameter(LoanProductAccountingParams.PENALTIES_RECEIVABLE.getValue())
                     .value(receivablePenaltyAccountId).notNull().integerGreaterThanZero();
+        }
+
+        if (!AccountingValidations.isAccrualBasedAccounting(accountingRuleType)
+                && this.fromApiJsonHelper.parameterExists(LoanProductConstants.ENABLE_ACCRUAL_ACTIVITY_POSTING, element)) {
+            final Boolean enableAccrualActivityPosting = this.fromApiJsonHelper
+                    .extractBooleanNamed(LoanProductConstants.ENABLE_ACCRUAL_ACTIVITY_POSTING, element);
+            baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_ACCRUAL_ACTIVITY_POSTING).value(enableAccrualActivityPosting)
+                    .ignoreIfNull().validateForBooleanValue();
+            if (!AccountingValidations.isAccrualBasedAccounting(accountingRuleType)) {
+                baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_ACCRUAL_ACTIVITY_POSTING).isOneOfTheseValues(Boolean.TRUE)
+                        .failWithCode("should be false for non accrual accounting");
+            }
         }
 
         if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.USE_BORROWER_CYCLE_PARAMETER_NAME, element)) {
@@ -764,7 +789,6 @@ public final class LoanProductDataValidator {
                     .validateForBooleanValue();
             validateDownPaymentPercentage(enableDownPayment, baseDataValidator, element);
             validateAutoRepaymentForDownPayment(enableDownPayment, baseDataValidator, element);
-            validateScheduleExtensionForDownPayment(enableDownPayment, baseDataValidator, element, null);
         }
 
         if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.REPAYMENT_START_DATE_TYPE, element)) {
@@ -779,21 +803,17 @@ public final class LoanProductDataValidator {
                     .extractBooleanNamed(LoanProductConstants.ENABLE_INSTALLMENT_LEVEL_DELINQUENCY, element);
             baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_INSTALLMENT_LEVEL_DELINQUENCY)
                     .value(enableInstallmentLevelDelinquency).ignoreIfNull().validateForBooleanValue();
+            if (delinquencyBucketId == null) {
+                if (enableInstallmentLevelDelinquency) {
+                    baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_INSTALLMENT_LEVEL_DELINQUENCY).failWithCode(
+                            "can.be.enabled.for.loan.product.having.valid.delinquency.bucket",
+                            "Installment level delinquency cannot be enabled if Delinquency bucket is not configured for loan product");
+                }
+            }
         }
 
-        String loanScheduleType = LoanScheduleType.CUMULATIVE.name();
         if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.LOAN_SCHEDULE_TYPE, element)) {
-            loanScheduleType = this.fromApiJsonHelper.extractStringNamed(LoanProductConstants.LOAN_SCHEDULE_TYPE, element);
-            baseDataValidator.reset().parameter(LoanProductConstants.LOAN_SCHEDULE_TYPE).value(loanScheduleType)
-                    .isOneOfEnumValues(LoanScheduleType.class);
-        }
-
-        if (!LoanScheduleType.PROGRESSIVE.equals(LoanScheduleType.valueOf(loanScheduleType))
-                && AdvancedPaymentScheduleTransactionProcessor.ADVANCED_PAYMENT_ALLOCATION_STRATEGY
-                        .equals(transactionProcessingStrategyCode)) {
-            baseDataValidator.reset().parameter(LoanProductConstants.LOAN_SCHEDULE_PROCESSING_TYPE).failWithCode(
-                    "supported.only.for.progressive.loan.schedule.type",
-                    "Progressive repayment schedule processing is only available with `Advanced payment allocation` strategy");
+            validateLoanScheduleType(transactionProcessingStrategyCode, baseDataValidator, element);
         }
 
         String loanScheduleProcessingType = LoanScheduleProcessingType.HORIZONTAL.name();
@@ -817,43 +837,25 @@ public final class LoanProductDataValidator {
             advancedPaymentAllocationsValidator.checkGroupingOfAllocationRules(advancedPaymentAllocationsJsonParser
                     .assembleLoanProductPaymentAllocationRules(command, transactionProcessingStrategyCode));
         }
+        final Integer recurringMoratoriumOnPrincipalPeriods = this.fromApiJsonHelper
+                .extractIntegerWithLocaleNamed("recurringMoratoriumOnPrincipalPeriods", element);
+        validateRepaymentPeriodWithGraceSettings(numberOfRepayments, graceOnPrincipalPayment, graceOnInterestPayment,
+                graceOnInterestCharged, recurringMoratoriumOnPrincipalPeriods, baseDataValidator);
+
+        if (AdvancedPaymentScheduleTransactionProcessor.ADVANCED_PAYMENT_ALLOCATION_STRATEGY.equals(transactionProcessingStrategyCode)
+                && this.fromApiJsonHelper.parameterExists(LoanProductConstants.SUPPORTED_INTEREST_REFUND_TYPES, element)) {
+            String[] supportedTransactionsForInterestRefund = this.fromApiJsonHelper
+                    .extractArrayNamed(LoanProductConstants.SUPPORTED_INTEREST_REFUND_TYPES, element);
+            Arrays.stream(supportedTransactionsForInterestRefund)
+                    .forEach(value -> baseDataValidator.reset().parameter(LoanProductConstants.SUPPORTED_INTEREST_REFUND_TYPES).value(value)
+                            .isOneOfEnumValues(LoanSupportedInterestRefundTypes.class));
+        } else if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.SUPPORTED_INTEREST_REFUND_TYPES, element)) {
+            baseDataValidator.reset().parameter(LoanProductConstants.SUPPORTED_INTEREST_REFUND_TYPES).failWithCode(
+                    "supported.only.for.progressive.loan.schedule.handling",
+                    "Automatic interest refund functionality is only supported for Progressive loans");
+        }
 
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
-    }
-
-    private void validateScheduleExtensionForDownPayment(Boolean enableDownPayment, DataValidatorBuilder baseDataValidator,
-            JsonElement element, final LoanProduct loanProduct) {
-
-        Boolean multiDisburseLoan = null;
-        if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.MULTI_DISBURSE_LOAN_PARAMETER_NAME, element)) {
-            multiDisburseLoan = this.fromApiJsonHelper.extractBooleanNamed(LoanProductConstants.MULTI_DISBURSE_LOAN_PARAMETER_NAME,
-                    element);
-        } else if (loanProduct != null) {
-            multiDisburseLoan = loanProduct.isMultiDisburseLoan();
-        }
-
-        if (multiDisburseLoan != null && multiDisburseLoan) {
-            if (enableDownPayment) {
-                if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.DISABLE_SCHEDULE_EXTENSION_FOR_DOWN_PAYMENT, element)) {
-                    final Boolean disableScheduleExtensionForDownPayment = this.fromApiJsonHelper
-                            .extractBooleanNamed(LoanProductConstants.DISABLE_SCHEDULE_EXTENSION_FOR_DOWN_PAYMENT, element);
-                    baseDataValidator.reset().parameter(LoanProductConstants.DISABLE_SCHEDULE_EXTENSION_FOR_DOWN_PAYMENT)
-                            .value(disableScheduleExtensionForDownPayment).ignoreIfNull().validateForBooleanValue();
-                }
-            } else {
-                if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.DISABLE_SCHEDULE_EXTENSION_FOR_DOWN_PAYMENT, element)) {
-                    baseDataValidator.reset().parameter(LoanProductConstants.DISABLE_SCHEDULE_EXTENSION_FOR_DOWN_PAYMENT).failWithCode(
-                            "supported.only.for.multi.disburse.loan.with.enable.down.payment.true",
-                            "Disable repayment schedule extension for down-payment is supported only for multi disburse loan with enable down-payment true");
-                }
-            }
-        } else {
-            if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.DISABLE_SCHEDULE_EXTENSION_FOR_DOWN_PAYMENT, element)) {
-                baseDataValidator.reset().parameter(LoanProductConstants.DISABLE_SCHEDULE_EXTENSION_FOR_DOWN_PAYMENT).failWithCode(
-                        "supported.only.for.multi.disburse.loan.with.enable.down.payment.true",
-                        "Disable repayment schedule extension for down-payment is supported only for multi disburse loan with enable down-payment true");
-            }
-        }
     }
 
     private void validateAutoRepaymentForDownPayment(Boolean enableDownPayment, DataValidatorBuilder baseDataValidator,
@@ -1273,13 +1275,15 @@ public final class LoanProductDataValidator {
                     .integerGreaterThanZero();
         }
 
+        Integer numberOfRepayments = loanProduct.getNumberOfRepayments();
         if (this.fromApiJsonHelper.parameterExists(NUMBER_OF_REPAYMENTS, element)) {
-            final Integer numberOfRepayments = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(NUMBER_OF_REPAYMENTS, element);
+            numberOfRepayments = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(NUMBER_OF_REPAYMENTS, element);
             baseDataValidator.reset().parameter(NUMBER_OF_REPAYMENTS).value(numberOfRepayments).notNull().integerGreaterThanZero();
         }
 
+        Integer repaymentEvery = loanProduct.getLoanProductRelatedDetail().getRepayEvery();
         if (this.fromApiJsonHelper.parameterExists(REPAYMENT_EVERY, element)) {
-            final Integer repaymentEvery = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(REPAYMENT_EVERY, element);
+            repaymentEvery = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(REPAYMENT_EVERY, element);
             baseDataValidator.reset().parameter(REPAYMENT_EVERY).value(repaymentEvery).notNull().integerGreaterThanZero();
         }
 
@@ -1298,19 +1302,21 @@ public final class LoanProductDataValidator {
         }
 
         // grace validation
+        Integer graceOnPrincipalPayment = loanProduct.getLoanProductRelatedDetail().getGraceOnPrincipalPayment();
         if (this.fromApiJsonHelper.parameterExists(GRACE_ON_PRINCIPAL_PAYMENT, element)) {
-            final Integer graceOnPrincipalPayment = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(GRACE_ON_PRINCIPAL_PAYMENT,
-                    element);
+            graceOnPrincipalPayment = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(GRACE_ON_PRINCIPAL_PAYMENT, element);
             baseDataValidator.reset().parameter(GRACE_ON_PRINCIPAL_PAYMENT).value(graceOnPrincipalPayment).zeroOrPositiveAmount();
         }
 
+        Integer graceOnInterestPayment = loanProduct.getLoanProductRelatedDetail().getGraceOnInterestPayment();
         if (this.fromApiJsonHelper.parameterExists(GRACE_ON_INTEREST_PAYMENT, element)) {
-            final Integer graceOnInterestPayment = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(GRACE_ON_INTEREST_PAYMENT, element);
+            graceOnInterestPayment = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(GRACE_ON_INTEREST_PAYMENT, element);
             baseDataValidator.reset().parameter(GRACE_ON_INTEREST_PAYMENT).value(graceOnInterestPayment).zeroOrPositiveAmount();
         }
 
+        Integer graceOnInterestCharged = loanProduct.getLoanProductRelatedDetail().getGraceOnInterestCharged();
         if (this.fromApiJsonHelper.parameterExists(GRACE_ON_INTEREST_CHARGED, element)) {
-            final Integer graceOnInterestCharged = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(GRACE_ON_INTEREST_CHARGED, element);
+            graceOnInterestCharged = this.fromApiJsonHelper.extractIntegerWithLocaleNamed(GRACE_ON_INTEREST_CHARGED, element);
             baseDataValidator.reset().parameter(GRACE_ON_INTEREST_CHARGED).value(graceOnInterestCharged).zeroOrPositiveAmount();
         }
 
@@ -1328,9 +1334,9 @@ public final class LoanProductDataValidator {
                     .integerZeroOrGreater();
         }
 
+        Long delinquencyBucketId = null;
         if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.DELINQUENCY_BUCKET_PARAM_NAME, element)) {
-            final Long delinquencyBucketId = this.fromApiJsonHelper.extractLongNamed(LoanProductConstants.DELINQUENCY_BUCKET_PARAM_NAME,
-                    element);
+            delinquencyBucketId = this.fromApiJsonHelper.extractLongNamed(LoanProductConstants.DELINQUENCY_BUCKET_PARAM_NAME, element);
             baseDataValidator.reset().parameter(LoanProductConstants.DELINQUENCY_BUCKET_PARAM_NAME).value(delinquencyBucketId)
                     .ignoreIfNull().integerGreaterThanZero();
         }
@@ -1403,6 +1409,7 @@ public final class LoanProductDataValidator {
         if (this.fromApiJsonHelper.parameterExists(IS_LINKED_TO_FLOATING_INTEREST_RATES, element)) {
             isLinkedToFloatingInterestRates = this.fromApiJsonHelper.extractBooleanNamed(IS_LINKED_TO_FLOATING_INTEREST_RATES, element);
         }
+        boolean isInterestBearing = false;
         if (isLinkedToFloatingInterestRates) {
             if (isEqualAmortization) {
                 throw new EqualAmortizationUnsupportedFeatureException("floating.interest.rate", "floating interest rate");
@@ -1511,6 +1518,7 @@ public final class LoanProductDataValidator {
             }
             baseDataValidator.reset().parameter(IS_FLOATING_INTEREST_RATE_CALCULATION_ALLOWED)
                     .value(isFloatingInterestRateCalculationAllowed).notNull().isOneOfTheseValues(true, false);
+            isInterestBearing = true;
         } else {
             if (this.fromApiJsonHelper.parameterExists(FLOATING_RATES_ID, element)) {
                 baseDataValidator.reset().parameter(FLOATING_RATES_ID).failWithCode(
@@ -1579,10 +1587,15 @@ public final class LoanProductDataValidator {
             }
             baseDataValidator.reset().parameter(INTEREST_RATE_FREQUENCY_TYPE).value(interestRateFrequencyType).notNull().inMinMaxRange(0,
                     4);
+            isInterestBearing = interestRatePerPeriod.compareTo(BigDecimal.ZERO) > 0;
         }
 
+        // Fixed Length validation
+        fixedLengthValidations(transactionProcessingStrategyCode, isInterestBearing, numberOfRepayments, repaymentEvery, element,
+                baseDataValidator);
+
         // Guarantee Funds
-        Boolean holdGuaranteeFunds = loanProduct.isHoldGuaranteeFundsEnabled();
+        Boolean holdGuaranteeFunds = loanProduct.isHoldGuaranteeFunds();
         if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.holdGuaranteeFundsParamName, element)) {
             holdGuaranteeFunds = this.fromApiJsonHelper.extractBooleanNamed(LoanProductConstants.holdGuaranteeFundsParamName, element);
             baseDataValidator.reset().parameter(LoanProductConstants.holdGuaranteeFundsParamName).value(holdGuaranteeFunds).notNull()
@@ -1628,6 +1641,25 @@ public final class LoanProductDataValidator {
 
         final Integer accountingRuleType = this.fromApiJsonHelper.extractIntegerNamed(ACCOUNTING_RULE, element, Locale.getDefault());
         baseDataValidator.reset().parameter(ACCOUNTING_RULE).value(accountingRuleType).ignoreIfNull().inMinMaxRange(1, 4);
+
+        boolean actualValue = loanProduct.getLoanProductRelatedDetail().isEnableAccrualActivityPosting();
+        if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.ENABLE_ACCRUAL_ACTIVITY_POSTING, element)) {
+            final Boolean enableAccrualActivityPosting = this.fromApiJsonHelper
+                    .extractBooleanNamed(LoanProductConstants.ENABLE_ACCRUAL_ACTIVITY_POSTING, element);
+            baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_ACCRUAL_ACTIVITY_POSTING).value(enableAccrualActivityPosting)
+                    .ignoreIfNull().validateForBooleanValue();
+            actualValue = enableAccrualActivityPosting;
+        }
+        if (actualValue) {
+            Integer ruleType = accountingRuleType;
+            if (ruleType == null) {
+                ruleType = loanProduct.getAccountingRule();
+            }
+            if (!AccountingValidations.isAccrualBasedAccounting(ruleType)) {
+                baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_ACCRUAL_ACTIVITY_POSTING)
+                        .failWithCode("should be false for non accrual accounting");
+            }
+        }
 
         final Long fundAccountId = this.fromApiJsonHelper.extractLongNamed(LoanProductAccountingParams.FUND_SOURCE.getValue(), element);
         baseDataValidator.reset().parameter(LoanProductAccountingParams.FUND_SOURCE.getValue()).value(fundAccountId).ignoreIfNull()
@@ -1777,7 +1809,6 @@ public final class LoanProductDataValidator {
                     .validateForBooleanValue();
             validateDownPaymentPercentage(enableDownPayment, baseDataValidator, element);
             validateAutoRepaymentForDownPayment(enableDownPayment, baseDataValidator, element);
-            validateScheduleExtensionForDownPayment(enableDownPayment, baseDataValidator, element, loanProduct);
         }
 
         Integer repaymentStartDateType = loanProduct.getRepaymentStartDateType().getValue();
@@ -1793,21 +1824,17 @@ public final class LoanProductDataValidator {
                     .extractBooleanNamed(LoanProductConstants.ENABLE_INSTALLMENT_LEVEL_DELINQUENCY, element);
             baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_INSTALLMENT_LEVEL_DELINQUENCY)
                     .value(enableInstallmentLevelDelinquency).ignoreIfNull().validateForBooleanValue();
+            if (delinquencyBucketId == null) {
+                if (enableInstallmentLevelDelinquency) {
+                    baseDataValidator.reset().parameter(LoanProductConstants.ENABLE_INSTALLMENT_LEVEL_DELINQUENCY).failWithCode(
+                            "can.be.enabled.for.loan.product.having.valid.delinquency.bucket",
+                            "Installment level delinquency cannot be enabled if Delinquency bucket is not configured for loan product");
+                }
+            }
         }
 
-        String loanScheduleType = loanProduct.getLoanProductRelatedDetail().getLoanScheduleType().name();
         if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.LOAN_SCHEDULE_TYPE, element)) {
-            loanScheduleType = this.fromApiJsonHelper.extractStringNamed(LoanProductConstants.LOAN_SCHEDULE_TYPE, element);
-            baseDataValidator.reset().parameter(LoanProductConstants.LOAN_SCHEDULE_TYPE).value(loanScheduleType)
-                    .isOneOfEnumValues(LoanScheduleType.class);
-
-            if (!LoanScheduleType.PROGRESSIVE.equals(LoanScheduleType.valueOf(loanScheduleType))
-                    && AdvancedPaymentScheduleTransactionProcessor.ADVANCED_PAYMENT_ALLOCATION_STRATEGY
-                            .equals(transactionProcessingStrategyCode)) {
-                baseDataValidator.reset().parameter(LoanProductConstants.LOAN_SCHEDULE_PROCESSING_TYPE).failWithCode(
-                        "supported.only.for.progressive.loan.schedule.type",
-                        "Progressive repayment schedule processing is only available with `Advanced payment allocation` strategy");
-            }
+            validateLoanScheduleType(transactionProcessingStrategyCode, baseDataValidator, element);
         }
 
         String loanScheduleProcessingType = loanProduct.getLoanProductRelatedDetail().getLoanScheduleProcessingType().name();
@@ -1837,6 +1864,11 @@ public final class LoanProductDataValidator {
                     "supported.only.for.progressive.loan.schedule.handling",
                     "Vertical repayment schedule processing is only available with `Advanced payment allocation` strategy");
         }
+        final Integer recurringMoratoriumOnPrincipalPeriods = this.fromApiJsonHelper
+                .extractIntegerWithLocaleNamed("recurringMoratoriumOnPrincipalPeriods", element);
+
+        validateRepaymentPeriodWithGraceSettings(numberOfRepayments, graceOnPrincipalPayment, graceOnInterestPayment,
+                graceOnInterestCharged, recurringMoratoriumOnPrincipalPeriods, baseDataValidator);
         throwExceptionIfValidationWarningsExist(dataValidationErrors);
     }
 
@@ -1910,11 +1942,8 @@ public final class LoanProductDataValidator {
 
     public void validateMinMaxConstraints(final JsonElement element, final DataValidatorBuilder baseDataValidator,
             final LoanProduct loanProduct) {
-
         validatePrincipalMinMaxConstraint(element, loanProduct, baseDataValidator);
-
         validateNumberOfRepaymentsMinMaxConstraint(element, loanProduct, baseDataValidator);
-
         validateNominalInterestRatePerPeriodMinMaxConstraint(element, loanProduct, baseDataValidator);
     }
 
@@ -1997,7 +2026,6 @@ public final class LoanProductDataValidator {
 
     private void validatePrincipalMinMaxConstraint(final JsonElement element, final LoanProduct loanProduct,
             final DataValidatorBuilder baseDataValidator) {
-
         boolean principalUpdated = false;
         boolean minPrincipalUpdated = false;
         boolean maxPrincipalUpdated = false;
@@ -2177,22 +2205,6 @@ public final class LoanProductDataValidator {
                         .notLessThanMin(minInterestRatePerPeriod);
             }
         }
-    }
-
-    private boolean isCashBasedAccounting(final Integer accountingRuleType) {
-        return AccountingRuleType.CASH_BASED.getValue().equals(accountingRuleType);
-    }
-
-    private boolean isAccrualBasedAccounting(final Integer accountingRuleType) {
-        return isUpfrontAccrualAccounting(accountingRuleType) || isPeriodicAccounting(accountingRuleType);
-    }
-
-    private boolean isUpfrontAccrualAccounting(final Integer accountingRuleType) {
-        return AccountingRuleType.ACCRUAL_UPFRONT.getValue().equals(accountingRuleType);
-    }
-
-    private boolean isPeriodicAccounting(final Integer accountingRuleType) {
-        return AccountingRuleType.ACCRUAL_PERIODIC.getValue().equals(accountingRuleType);
     }
 
     private void throwExceptionIfValidationWarningsExist(final List<ApiParameterError> dataValidationErrors) {
@@ -2425,7 +2437,7 @@ public final class LoanProductDataValidator {
                     variableInstallments = this.fromApiJsonHelper
                             .extractBooleanNamed(LoanProductConstants.allowVariableInstallmentsParamName, element);
                 } else if (loanProduct != null) {
-                    variableInstallments = loanProduct.allowVariabeInstallments();
+                    variableInstallments = loanProduct.isAllowVariabeInstallments();
                 }
                 if (variableInstallments != null && variableInstallments) {
                     baseDataValidator.reset().parameter(LoanProductConstants.allowVariableInstallmentsParamName)
@@ -2445,5 +2457,101 @@ public final class LoanProductDataValidator {
             }
 
         }
+    }
+
+    public void fixedLengthValidations(final String transactionProcessingStrategyCode, final boolean thereIsInterest,
+            final Integer numberOfRepayments, final Integer repayEvery, final JsonElement element,
+            final DataValidatorBuilder baseDataValidator) {
+        if (this.fromApiJsonHelper.parameterExists(LoanProductConstants.FIXED_LENGTH, element)) {
+            final JsonObject topLevelJsonElement = element.getAsJsonObject();
+            final Locale locale = this.fromApiJsonHelper.extractLocaleParameter(topLevelJsonElement);
+            final Integer fixedLength = this.fromApiJsonHelper.extractIntegerNamed(LoanProductConstants.FIXED_LENGTH, element, locale);
+            baseDataValidator.reset().parameter(LoanProductConstants.FIXED_LENGTH).value(fixedLength).ignoreIfNull()
+                    .integerGreaterThanZero();
+
+            if (fixedLength != null) {
+                if (!AdvancedPaymentScheduleTransactionProcessor.ADVANCED_PAYMENT_ALLOCATION_STRATEGY
+                        .equals(transactionProcessingStrategyCode)) {
+                    final String errorMsg = "Fixed Length configuration is only allowed with "
+                            + AdvancedPaymentScheduleTransactionProcessor.ADVANCED_PAYMENT_ALLOCATION_STRATEGY + " strategy";
+                    throw new GeneralPlatformDomainRuleException("error.msg.fixed.length.only.supported.for.advanced.payment.allocation",
+                            errorMsg, AdvancedPaymentScheduleTransactionProcessor.ADVANCED_PAYMENT_ALLOCATION_STRATEGY);
+                }
+
+                if (thereIsInterest) {
+                    final String errorMsg = "Fixed Length configuration is only allowed for zero interest products";
+                    throw new GeneralPlatformDomainRuleException("error.msg.fixed.length.only.supported.for.zero.interest", errorMsg);
+                }
+
+                final Integer valueToCompare = ((numberOfRepayments - 1) * repayEvery) + 1;
+                if (fixedLength.compareTo(valueToCompare) < 0) {
+                    final String errorMsg = "Wrong configuration between Number Of Repayments: " + numberOfRepayments + " * " + repayEvery
+                            + " and Fixed Length: " + fixedLength + " values";
+                    throw new GeneralPlatformDomainRuleException("error.msg.number.repayments.and.fixed.length.configuration.not.valid",
+                            errorMsg, numberOfRepayments, repayEvery, valueToCompare, fixedLength);
+                }
+            }
+        }
+    }
+
+    private void validateLoanScheduleType(final String transactionProcessingStrategyCode, final DataValidatorBuilder baseDataValidator,
+            final JsonElement element) {
+        final String loanScheduleType = this.fromApiJsonHelper.extractStringNamed(LoanProductConstants.LOAN_SCHEDULE_TYPE, element);
+        baseDataValidator.reset().parameter(LoanProductConstants.LOAN_SCHEDULE_TYPE).value(loanScheduleType)
+                .isOneOfEnumValues(LoanScheduleType.class);
+
+        if (!LoanScheduleType.PROGRESSIVE.equals(LoanScheduleType.valueOf(loanScheduleType))
+                && AdvancedPaymentScheduleTransactionProcessor.ADVANCED_PAYMENT_ALLOCATION_STRATEGY
+                        .equals(transactionProcessingStrategyCode)) {
+            baseDataValidator.reset().parameter(LoanProductConstants.LOAN_SCHEDULE_PROCESSING_TYPE).failWithCode(
+                    "supported.only.for.progressive.loan.schedule.type",
+                    "Progressive repayment schedule processing is only available with `Advanced payment allocation` strategy");
+        }
+
+        if (LoanScheduleType.PROGRESSIVE.equals(LoanScheduleType.valueOf(loanScheduleType))
+                && !AdvancedPaymentScheduleTransactionProcessor.ADVANCED_PAYMENT_ALLOCATION_STRATEGY
+                        .equals(transactionProcessingStrategyCode)) {
+            baseDataValidator.reset().parameter(LoanProductConstants.LOAN_SCHEDULE_TYPE).failWithCode(
+                    "supported.only.with.advanced.payment.allocation.strategy",
+                    loanScheduleType + " loan schedule type is not available with " + transactionProcessingStrategyCode + " strategy");
+        }
+    }
+
+    public void validateRepaymentPeriodWithGraceSettings(final Integer numberOfRepayments, final Integer graceOnPrincipalPayment,
+            final Integer graceOnInterestPayment, final Integer graceOnInterestCharged, final Integer recurringMoratoriumOnPrincipalPeriods,
+            DataValidatorBuilder baseDataValidator) {
+        if (numberOfRepayments <= defaultToZeroIfNull(graceOnPrincipalPayment)) {
+            baseDataValidator.reset().parameter("graceOnPrincipalPayment").value(graceOnPrincipalPayment)
+                    .failWithCode(".mustBeLessThan.numberOfRepayments");
+        }
+
+        if (numberOfRepayments <= defaultToZeroIfNull(graceOnInterestPayment)) {
+            baseDataValidator.reset().parameter("graceOnInterestPayment").value(graceOnInterestPayment)
+                    .failWithCode(".mustBeLessThan.numberOfRepayments");
+        }
+
+        if (numberOfRepayments < defaultToZeroIfNull(graceOnInterestCharged)) {
+            baseDataValidator.reset().parameter("graceOnInterestCharged").value(graceOnInterestCharged)
+                    .failWithCode(".mustBeLessThan.numberOfRepayments");
+        }
+
+        int graceOnPrincipal = 0;
+        if (graceOnPrincipalPayment != null) {
+            graceOnPrincipal = graceOnPrincipalPayment;
+        }
+        int recurMoratoriumOnPrincipal = 0;
+        if (recurringMoratoriumOnPrincipalPeriods != null) {
+            recurMoratoriumOnPrincipal = recurringMoratoriumOnPrincipalPeriods;
+        }
+
+        if ((recurMoratoriumOnPrincipal > 0) && ((numberOfRepayments - graceOnPrincipal) % (recurMoratoriumOnPrincipal + 1) != 1)) {
+            baseDataValidator.reset().parameter("graceOnPrincipalPayments.and.recurringMoratoriumOnPrincipalPeriods")
+                    .value(graceOnPrincipal).value(recurMoratoriumOnPrincipal)
+                    .failWithCode("causes.principal.moratorium.for.last.installment");
+        }
+    }
+
+    private Integer defaultToZeroIfNull(Integer value) {
+        return value != null ? value : 0;
     }
 }

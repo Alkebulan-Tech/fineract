@@ -64,6 +64,7 @@ import org.apache.fineract.interoperation.data.InteropKycResponseData;
 import org.apache.fineract.interoperation.data.InteropQuoteRequestData;
 import org.apache.fineract.interoperation.data.InteropQuoteResponseData;
 import org.apache.fineract.interoperation.data.InteropRequestData;
+import org.apache.fineract.interoperation.data.InteropTransactionData;
 import org.apache.fineract.interoperation.data.InteropTransactionRequestData;
 import org.apache.fineract.interoperation.data.InteropTransactionRequestResponseData;
 import org.apache.fineract.interoperation.data.InteropTransactionsData;
@@ -98,7 +99,6 @@ import org.apache.fineract.portfolio.paymenttype.domain.PaymentTypeRepository;
 import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
 import org.apache.fineract.portfolio.savings.SavingsTransactionBooleanValues;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccount;
-import org.apache.fineract.portfolio.savings.domain.SavingsAccountDomainService;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountRepository;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransactionRepository;
@@ -106,6 +106,7 @@ import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransactionSum
 import org.apache.fineract.portfolio.savings.domain.SavingsHelper;
 import org.apache.fineract.portfolio.savings.exception.InsufficientAccountBalanceException;
 import org.apache.fineract.portfolio.savings.exception.SavingsAccountNotFoundException;
+import org.apache.fineract.portfolio.savings.service.SavingsAccountDomainService;
 import org.apache.fineract.useradministration.domain.AppUser;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -218,7 +219,27 @@ public class InteropServiceImpl implements InteropService {
             return (transactionsTo == null || transactionsTo.compareTo(transactionDate) > 0) && (transactionsFrom == null
                     || transactionsFrom.compareTo(transactionDate.withHour(23).withMinute(59).withSecond(59)) <= 0);
         };
-        return InteropTransactionsData.build(savingsAccount, transFilter);
+        InteropTransactionsData interopTransactionsData = InteropTransactionsData.build(savingsAccount, transFilter);
+        for (InteropTransactionData interopTransactionData : interopTransactionsData.getTransactions()) {
+            final List<Note> transactionNotes = noteRepository
+                    .findBySavingsTransactionId(Long.valueOf(interopTransactionData.getTransactionId()));
+            StringBuilder sb = new StringBuilder();
+            for (final Note note : transactionNotes) {
+                String s = note.getNote();
+                if (s == null) {
+                    continue;
+                }
+                sb.append(s + " ");
+            }
+            if (sb.toString().length() > 0) {
+                String text = interopTransactionData.getNote() + " " + sb.toString();
+                if (text.length() > 500) {
+                    text = text.substring(0, 500);
+                }
+                interopTransactionData.updateNote(text);
+            }
+        }
+        return interopTransactionsData;
     }
 
     @NotNull

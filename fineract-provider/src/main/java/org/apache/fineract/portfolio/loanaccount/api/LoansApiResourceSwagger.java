@@ -44,6 +44,26 @@ final class LoansApiResourceSwagger {
         public Double approvalAmount;
         @Schema(example = "200.000000")
         public Double netDisbursalAmount;
+
+        public GetLoanCurrency currency;
+    }
+
+    public static final class GetLoanCurrency {
+
+        private GetLoanCurrency() {}
+
+        @Schema(example = "UGX")
+        public String code;
+        @Schema(example = "Uganda Shilling")
+        public String name;
+        @Schema(example = "2")
+        public Integer decimalPlaces;
+        @Schema(example = "USh")
+        public String displaySymbol;
+        @Schema(example = "currency.UGX")
+        public String nameCode;
+        @Schema(example = "Uganda Shilling (USh)")
+        public String displayLabel;
     }
 
     @Schema(description = "GetLoansTemplateResponse")
@@ -524,6 +544,8 @@ final class LoansApiResourceSwagger {
             public Double interestOutstanding;
             @Schema(example = "200000.000000")
             public Double interestOverdue;
+            @Schema(example = "0.00")
+            public Double feeAdjustments;
             @Schema(example = "18000.000000")
             public Double feeChargesCharged;
             @Schema(example = "0.000000")
@@ -538,6 +560,8 @@ final class LoansApiResourceSwagger {
             public Double feeChargesOutstanding;
             @Schema(example = "15000.000000")
             public Double feeChargesOverdue;
+            @Schema(example = "0.00")
+            public Double penaltyAdjustments;
             @Schema(example = "0.000000")
             public Double penaltyChargesCharged;
             @Schema(example = "0.000000")
@@ -612,7 +636,15 @@ final class LoansApiResourceSwagger {
             @Schema(example = "0.000000")
             public Double totalRepaymentTransaction;
             @Schema(example = "0.000000")
+            public Double totalInterestPaymentWaiver;
+            @Schema(example = "0.000000")
             public Double totalRepaymentTransactionReversed;
+            @Schema(example = "0.000000")
+            public BigDecimal totalUnpaidPayableDueInterest;
+            @Schema(example = "0.000000")
+            public BigDecimal totalUnpaidPayableNotDueInterest;
+            @Schema(example = "0.000000")
+            public BigDecimal totalInterestRefund;
             public Set<GetLoansLoanIdOverdueCharges> overdueCharges;
             @Schema(example = "1")
             public Long chargeOffReasonId;
@@ -980,6 +1012,14 @@ final class LoansApiResourceSwagger {
             public LocalDate delinquentDate;
             @Schema(example = "100.000000")
             public Double delinquentAmount;
+            @Schema(example = "80.000000")
+            public BigDecimal delinquentPrincipal;
+            @Schema(example = "10.000000")
+            public BigDecimal delinquentInterest;
+            @Schema(example = "6.000000")
+            public BigDecimal delinquentFee;
+            @Schema(example = "4.000000")
+            public BigDecimal delinquentPenalty;
             @Schema(example = "[2022, 07, 01]")
             public LocalDate lastPaymentDate;
             @Schema(example = "100.000000")
@@ -1081,11 +1121,13 @@ final class LoansApiResourceSwagger {
         @Schema(example = "1")
         public Integer repaymentEvery;
         public GetLoansLoanIdRepaymentFrequencyType repaymentFrequencyType;
+        @Schema(example = "1")
+        public Integer fixedLength;
         @Schema(example = "24")
         public BigDecimal interestRatePerPeriod;
         public GetLoansLoanIdInterestRateFrequencyType interestRateFrequencyType;
         @Schema(example = "24")
-        public Integer annualInterestRate;
+        public BigDecimal annualInterestRate;
         @Schema(example = "false")
         public Boolean isFloatingInterestRate;
         public GetLoansLoanIdAmortizationType amortizationType;
@@ -1126,8 +1168,6 @@ final class LoansApiResourceSwagger {
         public BigDecimal disbursedAmountPercentageForDownPayment;
         @Schema(example = "false")
         public Boolean enableAutoRepaymentForDownPayment;
-        @Schema(example = "false")
-        public Boolean disableScheduleExtensionForDownPayment;
         @Schema(example = "CUMULATIVE")
         public EnumOptionData loanScheduleType;
         @Schema(example = "HORIZONTAL")
@@ -1179,6 +1219,8 @@ final class LoansApiResourceSwagger {
         public Integer repaymentEvery;
         @Schema(example = "2")
         public Integer repaymentFrequencyType;
+        @Schema(example = "1")
+        public Integer fixedLength;
         @Schema(example = "2")
         public BigDecimal interestRatePerPeriod;
         @Schema(example = "1")
@@ -1217,6 +1259,14 @@ final class LoansApiResourceSwagger {
         public Integer graceOnArrearsAgeing;
         @Schema(example = "HORIZONTAL")
         public String loanScheduleProcessingType;
+        @Schema(example = "false")
+        public Boolean enableInstallmentLevelDelinquency;
+        @Schema(example = "false")
+        public Boolean enableDownPayment;
+        @Schema(example = "0.000000")
+        public BigDecimal disbursedAmountPercentageForDownPayment;
+        @Schema(example = "false")
+        public Boolean enableAutoRepaymentForDownPayment;
     }
 
     @Schema(description = "PostLoansResponse")
@@ -1315,6 +1365,8 @@ final class LoansApiResourceSwagger {
         public Integer repaymentEvery;
         @Schema(example = "0")
         public Integer repaymentFrequencyType;
+        @Schema(example = "1")
+        public Integer fixedLength;
         @Schema(example = "2")
         public BigDecimal interestRatePerPeriod;
         @Schema(example = "0")
@@ -1362,6 +1414,14 @@ final class LoansApiResourceSwagger {
         public List<PutLoansLoanIdDisbursementData> disbursementData;
         @Schema(example = "HORIZONTAL")
         public String loanScheduleProcessingType;
+        @Schema(example = "false")
+        public Boolean enableInstallmentLevelDelinquency;
+        @Schema(example = "false")
+        public Boolean enableDownPayment;
+        @Schema(example = "0.000000")
+        public BigDecimal disbursedAmountPercentageForDownPayment;
+        @Schema(example = "false")
+        public Boolean enableAutoRepaymentForDownPayment;
 
         static final class PutLoansLoanIdChanges {
 

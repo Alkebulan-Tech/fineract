@@ -28,14 +28,25 @@ buildscript {
             [
                 'fineract-api',
                 'fineract-core',
+                'fineract-accounting',
                 'fineract-provider',
+                'fineract-branch',
+                'fineract-document',
                 'fineract-investor',
+                'fineract-charge',
+                'fineract-rates',
+                'fineract-tax',
                 'fineract-loan',
+                'fineract-savings',
+                'fineract-report',
                 'integration-tests',
                 'twofactor-tests',
                 'oauth2-tests',
                 'fineract-client',
-                'fineract-avro-schemas'
+                'fineract-avro-schemas',
+                'fineract-e2e-tests-core',
+                'fineract-e2e-tests-runner',
+                'fineract-progressive-loan'
             ].contains(it.name)
         }
         fineractPublishProjects = subprojects.findAll{
@@ -44,9 +55,18 @@ buildscript {
                 'fineract-api',
                 'fineract-client',
                 'fineract-core',
+                'fineract-accounting',
                 'fineract-provider',
                 'fineract-investor',
-                'fineract-loan'
+                'fineract-charge',
+                'fineract-rates',
+                'fineract-tax',
+                'fineract-loan',
+                'fineract-savings',
+                'fineract-report',
+                'fineract-branch',
+                'fineract-document',
+                'fineract-progressive-loan'
             ].contains(it.name)
         }
         npmRepository = 'https://npm.pkg.github.com'
@@ -61,35 +81,35 @@ buildscript {
         classpath 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
         classpath 'com.google.cloud.tools:jib-layer-filter-extension-gradle:0.3.0'
         classpath 'org.apache.commons:commons-lang3:3.14.0'
-        classpath 'io.swagger.core.v3:swagger-jaxrs2-jakarta:2.2.19'
+        classpath 'io.swagger.core.v3:swagger-jaxrs2-jakarta:2.2.22'
         classpath 'jakarta.servlet:jakarta.servlet-api:6.0.0'
     }
 }
 
 plugins {
     id 'me.qoomon.git-versioning' version '6.4.3'
-    id "org.barfuin.gradle.taskinfo" version "2.1.0"
+    id "org.barfuin.gradle.taskinfo" version "2.2.0"
     id 'com.adarshr.test-logger' version '4.0.0'
-    id 'com.diffplug.spotless' version '6.23.3' apply false
+    id 'com.diffplug.spotless' version '6.25.0' apply false
     id 'org.nosphere.apache.rat' version '0.8.1' apply false
     id 'com.github.hierynomus.license' version '0.16.1' apply false
     id 'com.github.jk1.dependency-license-report' version '2.5' apply false
     id 'org.zeroturnaround.gradle.jrebel' version '1.2.0' apply false
-    id 'org.springframework.boot' version '3.1.7' apply false
+    id 'org.springframework.boot' version '3.2.6' apply false
     id 'net.ltgt.errorprone' version '3.1.0' apply false
     id 'io.swagger.core.v3.swagger-gradle-plugin' version '2.2.19' apply false
     id 'com.gorylenko.gradle-git-properties' version '2.4.1' apply false
     id 'org.asciidoctor.jvm.convert' version '3.3.2' apply false
     id 'org.asciidoctor.jvm.pdf' version '3.3.2' apply false
     id 'org.asciidoctor.jvm.epub' version '3.3.2' apply false
-    id 'org.asciidoctor.jvm.revealjs' version '3.3.2' apply false
-    id 'org.asciidoctor.jvm.gems' version '3.3.2' apply false
+    //    id 'org.asciidoctor.jvm.revealjs' version '3.3.2' apply false
+    //    id 'org.asciidoctor.jvm.gems' version '3.3.2' apply false
     id 'org.asciidoctor.kindlegen.base' version '3.2.0' apply false
-    id 'com.google.cloud.tools.jib' version '3.4.0' apply false
+    id 'com.google.cloud.tools.jib' version '3.4.2' apply false
     id 'org.sonarqube' version '4.4.1.3373'
     id 'com.github.andygoossens.modernizer' version '1.9.0' apply false
     // TODO: upgrade to 6.0.4
-    id 'com.github.spotbugs' version '5.0.15' apply false
+    id 'com.github.spotbugs' version '5.2.5' apply false
     id 'se.thinkcode.cucumber-runner' version '0.0.11' apply false
     id "com.github.davidmc24.gradle.plugin.avro-base" version "1.9.1" apply false
     id 'org.openapi.generator' version '7.2.0' apply false
@@ -109,7 +129,7 @@ gitVersioning.apply {
         describeTagPattern = '.*(\\d+\\.\\d+\\.\\d+).*'
         describeTagFirstParent = false
 
-        branch("\\d+\\.\\d+\\.\\d+") {
+        branch("release\\/\\d+\\.\\d+\\.\\d+") {
             version = '${describe.tag.version.major}.${describe.tag.version.minor}.${describe.tag.version.patch}'
         }
         branch("maintenance\\/\\d+\\.\\d+") {
@@ -278,7 +298,8 @@ allprojects  {
             ".mailmap",
             '**/images/diag-*.svg',
             '**/*.avsc',
-            "**/generated/**/*MapperImpl.java"
+            "**/generated/**/*MapperImpl.java",
+            '**/META-INF/fineract-test.config'
         ]
     }
 }
@@ -434,7 +455,7 @@ configure(project.fineractJavaProjects) {
     // Configuration for the Checkstyle plugin
     // https://docs.gradle.org/current/userguide/checkstyle_plugin.html
     dependencies {
-        checkstyle 'com.puppycrawl.tools:checkstyle:10.12.7'
+        checkstyle 'com.puppycrawl.tools:checkstyle:10.14.2'
         checkstyle 'com.github.sevntu-checkstyle:sevntu-checks:1.44.1'
     }
 
@@ -456,7 +477,7 @@ configure(project.fineractJavaProjects) {
     // Configuration for the errorprone plugin
     // https://github.com/tbroyer/gradle-errorprone-plugin
     dependencies {
-        errorprone "com.google.errorprone:error_prone_core:2.24.0"
+        errorprone "com.google.errorprone:error_prone_core:2.26.1"
     }
 
     tasks.withType(JavaCompile) {
@@ -691,10 +712,10 @@ configure(project.fineractCustomProjects) {
                 'com.google.truth.extensions:truth-java8-extension',
                 'io.github.classgraph:classgraph',
                 'io.cucumber:cucumber-core',
-                'io.cucumber:cucumber-java',
-                'io.cucumber:cucumber-java8',
-                'io.cucumber:cucumber-junit-platform-engine',
-                'io.cucumber:cucumber-spring',
+                'io.cucumber:cucumber-java:7.16.1',
+                'io.cucumber:cucumber-java8:7.16.1',
+                'io.cucumber:cucumber-junit-platform-engine:7.16.1',
+                'io.cucumber:cucumber-spring:7.16.1',
                 )
 
         testCompileOnly('org.projectlombok:lombok')
