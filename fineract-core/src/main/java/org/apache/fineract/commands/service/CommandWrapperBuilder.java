@@ -842,6 +842,15 @@ public class CommandWrapperBuilder {
         return this;
     }
 
+    public CommandWrapperBuilder loanInterestPaymentWaiverTransaction(final Long loanId) {
+        this.actionName = "INTERESTPAYMENTWAIVER";
+        this.entityName = "LOAN";
+        this.entityId = null;
+        this.loanId = loanId;
+        this.href = "/loans/" + loanId + "/transactions/template?command=interestpaymentwaiver";
+        return this;
+    }
+
     public CommandWrapperBuilder refundLoanCharge(final Long loanId) {
         this.actionName = "CHARGEREFUND";
         this.entityName = "LOAN";
@@ -1132,6 +1141,15 @@ public class CommandWrapperBuilder {
 
     public CommandWrapperBuilder disburseLoanToSavingsApplication(final Long loanId) {
         this.actionName = "DISBURSETOSAVINGS";
+        this.entityName = "LOAN";
+        this.entityId = loanId;
+        this.loanId = loanId;
+        this.href = "/loans/" + loanId;
+        return this;
+    }
+
+    public CommandWrapperBuilder disburseWithoutAutoDownPayment(final Long loanId) {
+        this.actionName = "DISBURSEWITHOUTAUTODOWNPAYMENT";
         this.entityName = "LOAN";
         this.entityId = loanId;
         this.loanId = loanId;
@@ -3653,6 +3671,38 @@ public class CommandWrapperBuilder {
         this.entityName = "LOAN";
         this.loanId = loanId;
         this.href = "/loans/" + loanId + "/transactions?command=downPayment";
+        return this;
+    }
+
+    public CommandWrapperBuilder reAge(final Long loanId) {
+        this.actionName = "REAGE";
+        this.entityName = "LOAN";
+        this.loanId = loanId;
+        this.href = "/loans/" + loanId + "/transactions?command=reAge";
+        return this;
+    }
+
+    public CommandWrapperBuilder undoReAge(final Long loanId) {
+        this.actionName = "UNDO_REAGE";
+        this.entityName = "LOAN";
+        this.loanId = loanId;
+        this.href = "/loans/" + loanId + "/transactions?command=undoReAge";
+        return this;
+    }
+
+    public CommandWrapperBuilder reAmortize(final Long loanId) {
+        this.actionName = "REAMORTIZE";
+        this.entityName = "LOAN";
+        this.loanId = loanId;
+        this.href = "/loans/" + loanId + "/transactions?command=reAmortize";
+        return this;
+    }
+
+    public CommandWrapperBuilder undoReAmortize(final Long loanId) {
+        this.actionName = "UNDO_REAMORTIZE";
+        this.entityName = "LOAN";
+        this.loanId = loanId;
+        this.href = "/loans/" + loanId + "/transactions?command=undoReAmortize";
         return this;
     }
 

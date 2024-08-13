@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 import org.apache.fineract.batch.command.internal.CreateTransactionLoanCommandStrategy;
 import org.apache.fineract.batch.domain.BatchRequest;
 import org.apache.fineract.batch.domain.BatchResponse;
+import org.apache.fineract.client.util.JSON;
+import org.apache.fineract.integrationtests.common.error.ErrorResponse;
 import org.apache.fineract.integrationtests.common.savings.SavingsTransactionData;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
@@ -56,6 +58,8 @@ public final class BatchHelper {
 
     private static final String BATCH_API_WITHOUT_ENCLOSING_URL_EXT = BATCH_API_URL + "&enclosingTransaction=false";
     private static final SecureRandom secureRandom = new SecureRandom();
+
+    private static final Gson GSON = new JSON().getGson();
 
     private BatchHelper() {
 
@@ -106,6 +110,14 @@ public final class BatchHelper {
                 jsonifiedBatchRequests, null);
         LOG.info("BatchHelper Response {}", response);
         return BatchHelper.fromJsonString(response);
+    }
+
+    public static ErrorResponse postBatchRequestsWithoutEnclosingTransactionError(final RequestSpecification requestSpec,
+            final ResponseSpecification responseSpec, final String jsonifiedBatchRequests) {
+        final String response = Utils.performServerPost(requestSpec, responseSpec, BATCH_API_WITHOUT_ENCLOSING_URL_EXT,
+                jsonifiedBatchRequests, null);
+        LOG.info("BatchHelper Response {}", response);
+        return GSON.fromJson(response, ErrorResponse.class);
     }
 
     /**
@@ -668,7 +680,7 @@ public final class BatchHelper {
         br.setMethod("POST");
         String dateString = date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"));
         br.setBody("{\"locale\": \"en\", \"dateFormat\": \"dd MMMM yyyy\", \"approvedOnDate\": \"" + dateString + "\","
-                + "\"note\": \"Loan approval note\"}");
+                + "\"note\": \"Loan approval note\", \"expectedDisbursementDate\": \"" + dateString + "\"}");
 
         return br;
     }
@@ -744,7 +756,7 @@ public final class BatchHelper {
      *            the action to transistion
      * @return BatchRequest the batch request
      */
-    public static BatchRequest transistionLoanStateByExternalId(final Long requestId, final Long reference, final LocalDate date,
+    public static BatchRequest transitionLoanStateByExternalId(final Long requestId, final Long reference, final LocalDate date,
             final String command) {
         final BatchRequest br = new BatchRequest();
 
@@ -757,7 +769,7 @@ public final class BatchHelper {
             br.setBody("{\"locale\": \"en\", \"dateFormat\": \"dd MMMM yyyy\", \"actualDisbursementDate\": \"" + dateString + "\"}");
         } else if ("approve".equals(command)) {
             br.setBody("{\"locale\": \"en\", \"dateFormat\": \"dd MMMM yyyy\", \"approvedOnDate\": \"" + dateString + "\","
-                    + "\"note\": \"Loan approval note\"}");
+                    + "\"note\": \"Loan approval note\", \"expectedDisbursementDate\": \"" + dateString + "\"}");
         }
 
         return br;
@@ -903,6 +915,23 @@ public final class BatchHelper {
      */
     public static BatchRequest goodwillCreditRequest(final Long requestId, final Long reference, final String amount) {
         return createTransactionRequest(requestId, reference, "goodwillCredit", amount, LocalDate.now(Utils.getZoneIdOfTenant()));
+    }
+
+    /**
+     * Creates and returns a {@link CreateTransactionLoanCommandStrategy} request with given request ID for payment
+     * waiver transaction.
+     *
+     *
+     * @param requestId
+     *            the request ID
+     * @param reference
+     *            the reference
+     * @param amount
+     *            the amount
+     * @return BatchRequest the created {@link BatchRequest}
+     */
+    public static BatchRequest interestPaymentWaiverRequest(final Long requestId, final Long reference, final String amount) {
+        return createTransactionRequest(requestId, reference, "interestPaymentWaiver", amount, LocalDate.now(Utils.getZoneIdOfTenant()));
     }
 
     /**
