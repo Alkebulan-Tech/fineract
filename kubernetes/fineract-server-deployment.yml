@@ -26,8 +26,8 @@ metadata:
 spec:
   ports:
   - protocol: TCP
-    port: 8080
-    targetPort: 8080
+    port: 8443
+    targetPort: 8443
   selector:
     app: fineract-server
     tier: backend
@@ -83,6 +83,8 @@ spec:
         env:
         - name: FINERACT_NODE_ID
           value: '1'
+        - name: FINERACT_SERVER_PORT
+          value: 8080
         - name: FINERACT_HIKARI_DRIVER_CLASS_NAME
           value: org.mariadb.jdbc.Driver
         - name: FINERACT_HIKARI_JDBC_URL
@@ -116,24 +118,5 @@ spec:
         - name: JAVA_TOOL_OPTIONS
           value: '-Xmx1G'
         ports:
-        - containerPort: 8080
-          name: fineract-server
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: fineract-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-  - host: fineract.example.com
-    http:
-      paths:
-      - path: /fineract-provider
-        pathType: Prefix
-        backend:
-          service:
-            name: fineract-server
-            port:
-              number: 8080
+         - containerPort: 8443
+           name: fineract-server
