@@ -118,3 +118,22 @@ spec:
         ports:
         - containerPort: 8080
           name: fineract-server
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fineract-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: fineract.example.com
+    http:
+      paths:
+      - path: /fineract-provider
+        pathType: Prefix
+        backend:
+          service:
+            name: fineract-server
+            port:
+              number: 8080
