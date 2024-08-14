@@ -88,7 +88,7 @@ spec:
         - name: FINERACT_HIKARI_DRIVER_CLASS_NAME
           value: org.mariadb.jdbc.Driver
         - name: FINERACT_HIKARI_JDBC_URL
-          value: jdbc:mariadb://fineractmysql:3306/fineract_tenants
+          value: "jdbc:mariadb://fineractmysql:3306/fineract_tenants?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&sessionVariables=time_zone='-00:00'"
         - name: FINERACT_HIKARI_USERNAME
           valueFrom:
             secretKeyRef:
